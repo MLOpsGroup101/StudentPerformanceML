@@ -7,6 +7,7 @@ from typing import Any, Mapping, Optional, Sequence, Tuple
 import joblib
 import kagglehub
 import pandas as pd
+from torch.utils.data import Dataset, TensorDataset
 import torch
 import typer
 from sklearn.compose import ColumnTransformer, make_column_selector
@@ -109,7 +110,7 @@ class MyDataset(Dataset):
     def __init__(
         self,
         split: str = "train",
-        cfg: Mapping[str, Any] = data_cfg,
+        cfg: dict[str, Any] = data_cfg,
     ) -> None:
         self.cfg = cfg
         self.split = split.lower()
@@ -145,7 +146,8 @@ class MyDataset(Dataset):
         if self.cfg.get('target_col') not in df.columns:
             raise KeyError(f"Target column '{self.cfg.get('target_col')}' not found. Columns: {list(df.columns)}")
 
-        dropped: Sequence[str] = self.cfg.get("dropped_columns", [])
+        dropped: Sequence[str] 
+        dropped = self.cfg.get("dropped_columns", [])
         train_size = float(self.cfg.get("train_size", 0.8))
         val_size = float(self.cfg.get("val_size", 0.1))
         test_size = float(self.cfg.get("test_size", 0.1))
@@ -178,11 +180,37 @@ class MyDataset(Dataset):
 
         (self.cfg.get('data_folder') / "feature_names.json").write_text(json.dumps(feat_names))
         joblib.dump(pre, self.cfg.get('data_folder') / "preprocessor.joblib")
+    
+    def load_data(self) -> tuple[TensorDataset, TensorDataset, TensorDataset]:
+        data_dir : Path
+        data_dir = self.cfg.get('data_folder')
+        
+        train_features = torch.load(data_dir / "X_train.pt")
+        train_target = torch.load(data_dir / "y_train.pt")
+        
+        val_features = torch.load(data_dir / "X_val.pt")
+        val_target = torch.load(data_dir / "y_val.pt")
+        
+        test_features = torch.load(data_dir / "X_test.pt")
+        test_target = torch.load(data_dir / "y_test.pt")
 
+        train_set = TensorDataset(train_features, train_target)
+        val_set = TensorDataset(val_features, val_target)
+        test_set = TensorDataset(test_features, test_target)
+        
+        return train_set, val_set, test_set
 
-def preprocess() -> None:
+def main() -> None:
     MyDataset(cfg=data_cfg).preprocess()
 
 
+
 if __name__ == "__main__":
-    typer.run(preprocess)
+    dataset_manager = MyDataset(cfg=data_cfg)
+    train_set, val_set, test_set = dataset_manager.load_data()
+    
+    for dataset in [train_set, val_set, test_set]:
+        print(f"rows:{len(dataset)} \t features:{len(dataset[0][0])} \t target:{len(dataset[1][0])}")
+    
+    typer.run(main)
+
