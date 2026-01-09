@@ -7,7 +7,7 @@ name = "stuperml"
 version = "0.0.1"
 description = "A short description of the project."
 authors = [
-  { name = "MLOpsGroup101", email = "your@email.com" },
+  { name = "MLOpsGroup101"},
 ]
 license = { file = "LICENSE" }
 keywords = ["machine learning", "MLOps"]
@@ -19,6 +19,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi==0.115.6",
+    "kagglehub>=0.4.0",
+    "numpy>=2.4.0",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.8.0",
     "torch==2.6.0",
     "typer==0.15.1",
     "uvicorn==0.34.0",
