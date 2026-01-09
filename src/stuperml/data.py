@@ -201,16 +201,18 @@ class MyDataset(Dataset):
         return train_set, val_set, test_set
 
 def main() -> None:
-    MyDataset(cfg=data_cfg).preprocess()
-
-
-
-if __name__ == "__main__":
     dataset_manager = MyDataset(cfg=data_cfg)
+    
+    dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
     
     for dataset in [train_set, val_set, test_set]:
         print(f"rows:{len(dataset)} \t features:{len(dataset[0][0])} \t target:{len(dataset[1][0])}")
-    
+
+
+if __name__ == "__main__":
     typer.run(main)
+
+    
+
 
