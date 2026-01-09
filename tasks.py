@@ -13,6 +13,12 @@ def preprocess_data(ctx: Context) -> None:
     ctx.run(f"uv run src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
 
 @task
+def sync(ctx: Context) -> None:
+    """Sync dependencies and fetch data artifacts."""
+    ctx.run("uv sync", echo=True, pty=not WINDOWS)
+    ctx.run("uv run python -m stuperml.sync", echo=True, pty=not WINDOWS)
+
+@task
 def train(ctx: Context) -> None:
     """Train model."""
     ctx.run(f"uv run src/{PROJECT_NAME}/train.py", echo=True, pty=not WINDOWS)

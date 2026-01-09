@@ -73,7 +73,12 @@ started with Machine Learning Operations (MLOps).
 
 Run Guide:
 
-To retrieve the dataset
+To sync dependencies and retrieve the dataset
+```bash
+uv run invoke sync
 ```
-python3 -m stuperml.data
+
+To retrieve the dataset without syncing dependencies
+```bash
+uv run python -m stuperml.sync
 ```
