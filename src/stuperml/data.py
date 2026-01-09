@@ -16,7 +16,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from torch.utils.data import Dataset
 
-from configs import data_cfg
+from configs import DataConfig, data_config
 
 
 def _download_csv(dataset_slug: str) -> Path:
@@ -105,12 +105,11 @@ def _to_tensor(x, dtype=torch.float32) -> torch.Tensor:
     return torch.as_tensor(x, dtype=dtype)
 
 
-
 class MyDataset(Dataset):
     def __init__(
         self,
         split: str = "train",
-        cfg: dict[str, Any] = data_cfg,
+        cfg: DataConfig = data_config,
     ) -> None:
         self.cfg = cfg
         self.split = split.lower()
@@ -121,8 +120,8 @@ class MyDataset(Dataset):
         if self.split not in {"train", "val", "test"}:
             raise ValueError("split must be one of: 'train', 'val', 'test'")
 
-        x_path = self.cfg.get('data_folder') / f"X_{self.split}.pt"
-        y_path = self.cfg.get('data_folder') / f"y_{self.split}.pt"
+        x_path = self.cfg.data_folder / f"X_{self.split}.pt"
+        y_path = self.cfg.data_folder / f"y_{self.split}.pt"
         if x_path.exists() and y_path.exists():
             self.X = torch.load(x_path)
             self.y = torch.load(y_path)
@@ -138,25 +137,25 @@ class MyDataset(Dataset):
         return self.X[index], self.y[index]
 
     def preprocess(self) -> None:
-        self.cfg.get('data_folder').mkdir(parents=True, exist_ok=True)
+        self.cfg.data_folder.mkdir(parents=True, exist_ok=True)
 
         csv_path = _download_csv("ankushnarwade/ai-impact-on-student-performance")
         df = pd.read_csv(csv_path)
 
-        if self.cfg.get('target_col') not in df.columns:
-            raise KeyError(f"Target column '{self.cfg.get('target_col')}' not found. Columns: {list(df.columns)}")
+        if self.cfg.target_col not in df.columns:
+            raise KeyError(f"Target column '{self.cfg.target_col}' not found. Columns: {list(df.columns)}")
 
         dropped: Sequence[str] 
-        dropped = self.cfg.get("dropped_columns", [])
-        train_size = float(self.cfg.get("train_size", 0.8))
-        val_size = float(self.cfg.get("val_size", 0.1))
-        test_size = float(self.cfg.get("test_size", 0.1))
-        seed = int(self.cfg.get("seed", 42))
+        dropped = self.cfg.dropped_columns
+        train_size = float(self.cfg.train_size)
+        val_size = float(self.cfg.val_size)
+        test_size = float(self.cfg.test_size)
+        seed = int(self.cfg.seed)
 
         _validate_splits(train_size, val_size, test_size)
 
-        y_np = df[self.cfg.get('target_col')].to_numpy()
-        X_df = df.drop(columns=[self.cfg.get('target_col'), *dropped], errors="ignore")
+        y_np = df[self.cfg.target_col].to_numpy()
+        X_df = df.drop(columns=[self.cfg.target_col, *dropped], errors="ignore")
 
         pre = _build_preprocessor()
         X_np = pre.fit_transform(X_df)
@@ -170,20 +169,20 @@ class MyDataset(Dataset):
             X_np, y_np, train_size, val_size, test_size, seed
         )
 
-        torch.save(_to_tensor(X_train), self.cfg.get('data_folder') / "X_train.pt")
-        torch.save(_to_tensor(X_val), self.cfg.get('data_folder') / "X_val.pt")
-        torch.save(_to_tensor(X_test), self.cfg.get('data_folder') / "X_test.pt")
+        torch.save(_to_tensor(X_train), self.cfg.data_folder / "X_train.pt")
+        torch.save(_to_tensor(X_val), self.cfg.data_folder / "X_val.pt")
+        torch.save(_to_tensor(X_test), self.cfg.data_folder / "X_test.pt")
 
-        torch.save(_to_tensor(y_train), self.cfg.get('data_folder') / "y_train.pt")
-        torch.save(_to_tensor(y_val), self.cfg.get('data_folder') / "y_val.pt")
-        torch.save(_to_tensor(y_test), self.cfg.get('data_folder') / "y_test.pt")
+        torch.save(_to_tensor(y_train), self.cfg.data_folder / "y_train.pt")
+        torch.save(_to_tensor(y_val), self.cfg.data_folder / "y_val.pt")
+        torch.save(_to_tensor(y_test), self.cfg.data_folder / "y_test.pt")
 
-        (self.cfg.get('data_folder') / "feature_names.json").write_text(json.dumps(feat_names))
-        joblib.dump(pre, self.cfg.get('data_folder') / "preprocessor.joblib")
+        (self.cfg.data_folder / "feature_names.json").write_text(json.dumps(feat_names))
+        joblib.dump(pre, self.cfg.data_folder / "preprocessor.joblib")
     
     def load_data(self) -> tuple[TensorDataset, TensorDataset, TensorDataset]:
         data_dir : Path
-        data_dir = self.cfg.get('data_folder')
+        data_dir = self.cfg.data_folder
         
         train_features = torch.load(data_dir / "X_train.pt")
         train_target = torch.load(data_dir / "y_train.pt")
@@ -201,7 +200,7 @@ class MyDataset(Dataset):
         return train_set, val_set, test_set
 
 def main() -> None:
-    dataset_manager = MyDataset(cfg=data_cfg)
+    dataset_manager = MyDataset(cfg=data_config)
     
     dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
