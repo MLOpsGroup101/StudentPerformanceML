@@ -9,13 +9,14 @@ import torch
 import typer
 
 from configs import DataConfig, data_config
-from stuperml.utils import(
+from stuperml.utils import (
     _download_csv,
     _validate_splits,
     _build_preprocessor,
     _to_tensor,
     _split_data,
 )
+
 
 class MyDataset(Dataset):
     def __init__(
@@ -57,7 +58,7 @@ class MyDataset(Dataset):
         if self.cfg.target_col not in df.columns:
             raise KeyError(f"Target column '{self.cfg.target_col}' not found. Columns: {list(df.columns)}")
 
-        dropped: Sequence[str] 
+        dropped: Sequence[str]
         dropped = self.cfg.dropped_columns
         train_size = float(self.cfg.train_size)
         val_size = float(self.cfg.val_size)
@@ -91,39 +92,36 @@ class MyDataset(Dataset):
 
         (self.cfg.data_folder / "feature_names.json").write_text(json.dumps(feat_names))
         joblib.dump(pre, self.cfg.data_folder / "preprocessor.joblib")
-    
+
     def load_data(self) -> tuple[TensorDataset, TensorDataset, TensorDataset]:
-        data_dir : Path
+        data_dir: Path
         data_dir = self.cfg.data_folder
-        
+
         train_features = torch.load(data_dir / "X_train.pt")
         train_target = torch.load(data_dir / "y_train.pt")
-        
+
         val_features = torch.load(data_dir / "X_val.pt")
         val_target = torch.load(data_dir / "y_val.pt")
-        
+
         test_features = torch.load(data_dir / "X_test.pt")
         test_target = torch.load(data_dir / "y_test.pt")
 
         train_set = TensorDataset(train_features, train_target)
         val_set = TensorDataset(val_features, val_target)
         test_set = TensorDataset(test_features, test_target)
-        
+
         return train_set, val_set, test_set
+
 
 def main() -> None:
     dataset_manager = MyDataset(cfg=data_config)
-    
+
     dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
-    
+
     for dataset in [train_set, val_set, test_set]:
         print(f"rows:{len(dataset)} \t features:{len(dataset[0][0])} \t target:{len(dataset[1][0])}")
 
 
 if __name__ == "__main__":
     typer.run(main)
-
-    
-
-

@@ -1,7 +1,7 @@
 # from stuperml.model import Model
 # from stuperml.data import MyDataset
 
-# # TODO This function still needs to be implemented. 
+# # TODO This function still needs to be implemented.
 # def train():
 #     # dataset = MyDataset("data/raw")
 #     # model = Model()

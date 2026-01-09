@@ -13,6 +13,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
+
 @dataclass(frozen=True)
 class DataConfig:
     data_folder: Path = Path("data/")
@@ -22,5 +23,6 @@ class DataConfig:
     test_size: float = 0.1
     val_size: float = 0.1
     seed: int = 42
-    
+
+
 data_config = DataConfig()
