@@ -17,6 +17,7 @@ class SimpleMLP(nn.Module):
         x = self.fc3(x)
         return x
 
+
 class MeanBaseModel(nn.Module):
     mean_value: Tensor
 

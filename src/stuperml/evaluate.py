@@ -8,6 +8,7 @@ from configs import data_config
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
+
 def evaluate(model_checkpoint: str) -> None:
     print("Evaluating like my life depended on it")
     print(model_checkpoint)
@@ -23,17 +24,17 @@ def evaluate(model_checkpoint: str) -> None:
     model.eval()
     total_mae, total_samples = 0, 0
     all_residuals = []
-    
+
     with torch.no_grad():
         for features, target in test_dataloader:
             features, target = features.to(DEVICE), target.to(DEVICE)
             target = target.view(-1, 1).float()
-            
+
             y_pred = model(features)
-            
+
             total_mae += torch.abs(y_pred - target).sum().item()
             total_samples += target.size(0)
-            
+
             residuals = (target - y_pred).cpu().numpy()
             all_residuals.extend(residuals.flatten())
 
@@ -44,6 +45,7 @@ def evaluate(model_checkpoint: str) -> None:
     plt.xlabel("Error Magnitude")
     plt.ylabel("Count")
     plt.savefig("src/stuperml/figures/residual_distribution.png")
+
 
 if __name__ == "__main__":
     # evaluate('models/model.pth') # For testing
