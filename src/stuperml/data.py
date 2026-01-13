@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Optional
 
 import joblib
 import pandas as pd
