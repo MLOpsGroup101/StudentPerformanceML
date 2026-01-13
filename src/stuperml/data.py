@@ -4,7 +4,7 @@ from typing import Optional, Sequence
 
 import joblib
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+
 from torch.utils.data import Dataset, TensorDataset
 import torch
 import typer
