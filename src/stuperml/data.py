@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Optional
 
 import joblib
 import pandas as pd
+
 from torch.utils.data import Dataset, TensorDataset
 import torch
 import typer
@@ -58,7 +59,6 @@ class MyDataset(Dataset):
         if self.cfg.target_col not in df.columns:
             raise KeyError(f"Target column '{self.cfg.target_col}' not found. Columns: {list(df.columns)}")
 
-        dropped: Sequence[str]
         dropped = self.cfg.dropped_columns
         train_size = float(self.cfg.train_size)
         val_size = float(self.cfg.val_size)
@@ -66,7 +66,6 @@ class MyDataset(Dataset):
         seed = int(self.cfg.seed)
 
         _validate_splits(train_size, val_size, test_size)
-
         y_np = df[self.cfg.target_col].to_numpy()
         X_df = df.drop(columns=[self.cfg.target_col, *dropped], errors="ignore")
 
