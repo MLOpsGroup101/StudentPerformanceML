@@ -1,4 +1,3 @@
-from torch.utils.data import Dataset
 from configs import data_config
 from stuperml.data import main, MyDataset
 import torch
@@ -6,11 +5,11 @@ import torch
 from pathlib import Path
 
 def test_data_preprocessing(): 
-    path = Path(data_config.data_folder)    
-    assert path.exists(), f"Data directory was not created at: {path.absolute()}"
-    
     dataset = MyDataset(cfg=data_config)
     dataset.preprocess()
+    
+    path = Path(data_config.data_folder)    
+    assert path.exists(), f"Data directory was not created at: {path.absolute()}"
     
     pt_files = list(path.glob("*.pt"))
     assert len(pt_files) == 6, f"Preprocessing failed. Found files: {[file.name for file in pt_files]}"
@@ -42,15 +41,14 @@ def test_data_load():
     assert features.shape[0] == targets.shape[0]
     
 def test_data_main():
-    try: main()
+    try: 
+        main()
     except Exception as e: 
         assert False, f"main() failed: {e}"
         
 
 
-if __name__ == '__main__':
-    # test_data_preprocessing()
-    test_data_load()
+
     
     
         
