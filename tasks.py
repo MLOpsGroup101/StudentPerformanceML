@@ -4,7 +4,7 @@ from invoke import Context, task
 
 WINDOWS = os.name == "nt"
 PROJECT_NAME = "stuperml"
-PYTHON_VERSION = "3.12"
+PYTHON_VERSION = "3.13"
 
 
 # Project commands

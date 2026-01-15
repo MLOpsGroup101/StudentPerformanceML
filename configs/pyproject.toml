@@ -5,7 +5,7 @@ description = "Add your description here"
 authors = [
     { name = "Viet Nguyen", email = "vietnhprivat@gmail.com" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = []
 
 [build-system]
