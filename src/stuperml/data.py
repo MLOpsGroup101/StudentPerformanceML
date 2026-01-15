@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -8,10 +9,10 @@ import pandas as pd
 from torch.utils.data import Dataset, TensorDataset
 import torch
 import typer
-
 from configs import DataConfig, data_config
 from stuperml.utils import (
     _download_csv,
+    _download_csv_from_gcs,
     _validate_splits,
     _build_preprocessor,
     _to_tensor,
@@ -53,7 +54,15 @@ class MyDataset(Dataset):
     def preprocess(self) -> None:
         self.cfg.data_folder.mkdir(parents=True, exist_ok=True)
 
-        csv_path = _download_csv("ankushnarwade/ai-impact-on-student-performance")
+        if self.cfg.gcs_uri:
+            if self.cfg.gcs_service_account_key and "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+                os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.cfg.gcs_service_account_key
+            gcs_uri = self.cfg.gcs_uri
+            if self.cfg.gcs_data:
+                gcs_uri = f"{gcs_uri.rstrip('/')}/{self.cfg.gcs_data}"
+            csv_path = _download_csv_from_gcs(gcs_uri, self.cfg.data_folder)
+        else:
+            csv_path = _download_csv("ankushnarwade/ai-impact-on-student-performance")
         df = pd.read_csv(csv_path)
 
         if self.cfg.target_col not in df.columns:
