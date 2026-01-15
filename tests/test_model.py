@@ -1,5 +1,4 @@
 import torch
-import pytest
 from stuperml.model import MeanBaseModel, SimpleMLP
 
 def test_simple_mlp_output_shape():
