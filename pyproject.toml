@@ -30,6 +30,7 @@ dependencies = [
     "uvicorn==0.40.0",
     "matplotlib>=3.10.8",
     "google-api-python-client>=2.188.0",
+    "google-cloud-storage>=3.8.0",
 ]
 
 [dependency-groups]
