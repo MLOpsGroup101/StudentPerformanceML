@@ -1,6 +1,5 @@
 # stuperml
 
-A short description of the project.
 
 The goal of the project is to analyze how AI-assisted learning influences student outcomes and to develop a robust, reproducible machine learning system capable of predicting exam and overall academic scores.
 
@@ -16,7 +15,7 @@ A core focus of this project is the application of MLOps best practices. The cod
 
 Overall, this project demonstrates how modern MLOps techniques can be combined with deep learning to build production ready machine learning systems.
 
-
+Notice the project is intended for MacOS systems.
 
 ## Project structure
 
