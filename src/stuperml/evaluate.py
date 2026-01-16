@@ -12,7 +12,6 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.ba
 
 def evaluate(model_checkpoint: str) -> None:
     print("Evaluating like my life depended on it")
-        logger.info("Loaded evaluate.py module")
     print(model_checkpoint)
 
     _, _, test_set = MyDataset(cfg=data_config).load_data()
