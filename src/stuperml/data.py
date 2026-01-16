@@ -31,6 +31,7 @@ class MyDataset(Dataset):
         split: str = "train",
         cfg: DataConfig = data_config,
     ) -> None:
+        logger.debug(f"Initializing MyDataset with split='{split}' and cfg={cfg}")
         self.cfg = cfg
         self.split = split.lower()
 
@@ -38,13 +39,19 @@ class MyDataset(Dataset):
         self.y: Optional[torch.Tensor] = None
 
         if self.split not in {"train", "val", "test"}:
+            logger.error(f"Invalid split '{self.split}' provided.")
             raise ValueError("split must be one of: 'train', 'val', 'test'")
+        logger.info(f"MyDataset initialized for split '{self.split}'.")
 
         x_path = self.cfg.data_folder / f"X_{self.split}.pt"
         y_path = self.cfg.data_folder / f"y_{self.split}.pt"
         if x_path.exists() and y_path.exists():
+            logger.debug(f"Loading preprocessed tensors from {x_path} and {y_path}.")
             self.X = torch.load(x_path)
             self.y = torch.load(y_path)
+            logger.info(f"Loaded {len(self.X)} samples for split '{self.split}'.")
+        else:
+            logger.warning(f"Preprocessed data not found at {x_path} and {y_path}. Call preprocess() first.")
 
     def __len__(self) -> int:
         if self.X is None:
