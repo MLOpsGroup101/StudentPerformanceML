@@ -29,6 +29,9 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
+      - name: Create GCS Key File
+        run: echo '${{ secrets.GCP_SA_KEY }}' > ./temp-gcp-key.json
+
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
@@ -36,3 +39,5 @@ jobs:
         run: |
           uv run coverage run -m pytest
           uv run coverage report -m
+        env:
+          GCS_SA_KEY_PATH: "./temp-gcp-key.json"
