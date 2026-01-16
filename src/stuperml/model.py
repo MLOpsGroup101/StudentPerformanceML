@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
+from stuperml.logger import setup_logger
+from luguru import logger
+
+setup_logger
+
 
 class SimpleMLP(nn.Module):
     def __init__(self, input_size: int):

@@ -12,6 +12,7 @@ from torch.utils.data import Dataset, TensorDataset
 import torch
 import typer
 from configs import DataConfig, data_config
+from stuperml.logger import setup_logger
 from stuperml.utils import (
     _download_csv,
     _download_csv_from_gcs,
@@ -20,6 +21,8 @@ from stuperml.utils import (
     _to_tensor,
     _split_data,
 )
+
+setup_logger()
 
 
 class MyDataset(Dataset):

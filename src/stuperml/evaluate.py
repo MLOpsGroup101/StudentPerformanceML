@@ -5,7 +5,10 @@ from loguru import logger
 
 from stuperml.data import MyDataset
 from stuperml.model import SimpleMLP
+from stuperml.logger import setup_logger
 from configs import data_config
+
+setup_logger
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 
