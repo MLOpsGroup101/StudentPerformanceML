@@ -76,3 +76,8 @@ To retrieve the dataset without syncing dependencies
 ```bash
 uv run src/stuperml/data.py
 ```
+
+To launch API in terminal:
+```bash
+uv run uvicorn src.stuperml.api:app --reload
+```
