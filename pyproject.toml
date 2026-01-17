@@ -26,7 +26,7 @@ dependencies = [
     "pandas>=2.3.3",
     "scikit-learn>=1.8.0",
     "torch==2.9.1",
-    "typer==0.15.1",
+    "typer==0.21.1",
     "uvicorn==0.40.0",
     "matplotlib>=3.10.8",
     "google-api-python-client>=2.188.0",
