@@ -5,12 +5,12 @@ WORKDIR /app
 
 # install dependencies
 COPY uv.lock pyproject.toml ./
-# Ensure 'fastapi', 'uvicorn', 'joblib', 'pandas', 'torch' are in pyproject.toml
+COPY configs/ configs/
+
 RUN uv sync --frozen --no-install-project
 
 # copy source code
 COPY src/ src/
-COPY configs/ configs/
 COPY README.md README.md
 COPY LICENSE LICENSE
 
@@ -22,6 +22,6 @@ COPY data/ data/
 RUN uv sync --frozen
 
 # define the command to run the API
-# Cloud Run injects a $PORT environment variable, but 8080 is the default.
+# Cloud Run injects a $PORT environment variable, 8080 is the default.
 # --host 0.0.0.0 makes it accessible outside the container.
 ENTRYPOINT ["uv", "run", "uvicorn", "src.stuperml.api:app", "--host", "0.0.0.0", "--port", "8080"]
