@@ -10,7 +10,7 @@ def setup_logger() -> None:
     # Remove all default Loguru handlers.
     logger.remove()
 
-    log_dir = Path("logger")
+    log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)
     
     # Get the current date and time as a string and build the full path to the log file.

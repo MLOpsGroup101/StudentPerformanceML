@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch import Tensor
 
 from stuperml.logger import setup_logger
-from luguru import logger
+from loguru import logger
 
 setup_logger
 

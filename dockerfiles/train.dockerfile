@@ -16,7 +16,7 @@ COPY README.md LICENSE ./
 RUN uv sync --frozen
 
 # Create output directories
-RUN mkdir -p models src/stuperml/figures
+RUN mkdir -p models src/stuperml/figures logs
 
 
 ENTRYPOINT ["uv", "run", "src/stuperml/train.py"]
@@ -35,3 +35,4 @@ ENTRYPOINT ["uv", "run", "src/stuperml/train.py"]
 
 ################
 
+# docker run -v "$(pwd)/models:/app/models" -v "$(pwd)/src/stuperml/figures:/app/src/stuperml/figures" -v "$(pwd)/logs:/app/logs" stuperml-train
