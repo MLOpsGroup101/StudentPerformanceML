@@ -12,6 +12,7 @@ from torch.utils.data import Dataset, TensorDataset
 import torch
 import typer
 from configs import DataConfig, data_config
+from stuperml.logger import setup_logger
 from stuperml.utils import (
     _download_csv,
     _download_csv_from_gcs,
@@ -21,6 +22,8 @@ from stuperml.utils import (
     _split_data,
 )
 
+setup_logger()
+
 
 class MyDataset(Dataset):
     def __init__(
@@ -28,6 +31,7 @@ class MyDataset(Dataset):
         split: str = "train",
         cfg: DataConfig = data_config,
     ) -> None:
+        logger.debug(f"Initializing MyDataset with split='{split}' and cfg={cfg}")
         self.cfg = cfg
         self.split = split.lower()
 
@@ -35,13 +39,19 @@ class MyDataset(Dataset):
         self.y: Optional[torch.Tensor] = None
 
         if self.split not in {"train", "val", "test"}:
+            logger.error(f"Invalid split '{self.split}' provided.")
             raise ValueError("split must be one of: 'train', 'val', 'test'")
+        logger.info(f"MyDataset initialized for split '{self.split}'.")
 
         x_path = self.cfg.data_folder / f"X_{self.split}.pt"
         y_path = self.cfg.data_folder / f"y_{self.split}.pt"
         if x_path.exists() and y_path.exists():
+            logger.debug(f"Loading preprocessed tensors from {x_path} and {y_path}.")
             self.X = torch.load(x_path)
             self.y = torch.load(y_path)
+            logger.info(f"Loaded {len(self.X)} samples for split '{self.split}'.")
+        else:
+            logger.warning(f"Preprocessed data not found at {x_path} and {y_path}. Call preprocess() first.")
 
     def __len__(self) -> int:
         if self.X is None:
@@ -54,20 +64,32 @@ class MyDataset(Dataset):
         return self.X[index], self.y[index]
 
     def preprocess(self) -> None:
+        logger.debug("Starting data preprocessing")
         self.cfg.data_folder.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Data folder created/verified: {self.cfg.data_folder}")
 
         if self.cfg.gcs_uri:
+            logger.debug("Using GCS data source")
             if self.cfg.gcs_service_account_key and "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
                 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.cfg.gcs_service_account_key
             gcs_uri = self.cfg.gcs_uri
             if self.cfg.gcs_data:
                 gcs_uri = f"{gcs_uri.rstrip('/')}/{self.cfg.gcs_data}"
-            csv_path = _download_csv_from_gcs(gcs_uri, self.cfg.data_folder)
+            try:
+                csv_path = _download_csv_from_gcs(gcs_uri, self.cfg.data_folder)
+                logger.info(f"Downloaded CSV from GCS: {gcs_uri}")
+            except Exception as e:
+                logger.error(f"Failed to download CSV from GCS: {e}")
+                raise
         else:
+            logger.debug("Using Kaggle data source")
             csv_path = _download_csv("ankushnarwade/ai-impact-on-student-performance")
+            logger.info(f"Downloaded CSV from Kaggle dataset: {csv_path}")
         df = pd.read_csv(csv_path)
+        logger.debug(f"CSV loaded into DataFrame with shape {df.shape}")
 
         if self.cfg.target_col not in df.columns:
+            logger.error(f"Target column '{self.cfg.target_col}' not found. Available columns: {list(df.columns)}")
             raise KeyError(f"Target column '{self.cfg.target_col}' not found. Columns: {list(df.columns)}")
 
         dropped = self.cfg.dropped_columns
@@ -102,6 +124,7 @@ class MyDataset(Dataset):
 
         (self.cfg.data_folder / "feature_names.json").write_text(json.dumps(feat_names))
         joblib.dump(pre, self.cfg.data_folder / "preprocessor.joblib")
+        logger.info("Preprocessing complete - data splits and preprocessor saved.")
 
     def load_data(self) -> tuple[TensorDataset, TensorDataset, TensorDataset]:
         data_dir: Path
