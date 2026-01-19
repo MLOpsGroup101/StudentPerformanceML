@@ -27,7 +27,7 @@ ENTRYPOINT ["uv", "run", "src/stuperml/train.py"]
 
     # docker build -f dockerfiles/train.dockerfile . -t stuperml-train
 
-    # docker run -v $(pwd)/models:/app/models -v $(pwd)/src/stuperml/figures:/app/src/stuperml/figures stuperml-train
+    # # docker run -v "$(pwd)/models:/app/models" -v "$(pwd)/src/stuperml/figures:/app/src/stuperml/figures" -v "$(pwd)/logs:/app/logs" stuperml-train
 
 # example to override parameters:
 
@@ -35,4 +35,3 @@ ENTRYPOINT ["uv", "run", "src/stuperml/train.py"]
 
 ################
 
-# docker run -v "$(pwd)/models:/app/models" -v "$(pwd)/src/stuperml/figures:/app/src/stuperml/figures" -v "$(pwd)/logs:/app/logs" stuperml-train
