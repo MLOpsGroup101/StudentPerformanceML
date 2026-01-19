@@ -1,5 +1,4 @@
 import requests
-import json
 
 # Cloud Run URL
 URL = "https://stuperml-manual-709612871775.europe-west1.run.app/predict"
