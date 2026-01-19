@@ -19,7 +19,6 @@ class SimpleMLP(nn.Module):
         logger.info("SimpleMLP initialized successfully.")
 
     def forward(self, x: Tensor) -> Tensor:
-        logger.debug(f"Forward pass with input shape: {x.shape}")
         x = self.relu(self.fc1(x))
         x = self.relu(self.fc2(x))
         x = self.fc3(x)
