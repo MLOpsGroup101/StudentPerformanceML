@@ -27,6 +27,6 @@ ENTRYPOINT ["uv", "run", "src/stuperml/evaluate.py"]
     # docker build -f dockerfiles/evaluate.dockerfile . -t stuperml-evaluate
 
     ## evaluate the saved model (model.pth): 
-    # docker run -v $(pwd)/models:/app/models -v $(pwd)/src/stuperml/figures:/app/src/stuperml/figures -v "$(pwd)/logs:/app/logs" stuperml-evaluate --model-checkpoint models/model.pth
+    # docker run -v $(pwd)/models:/app/models -v $(pwd)/src/stuperml/figures:/app/src/stuperml/figures -v "$(pwd)/logs:/app/logs" stuperml-evaluate models/model.pth
 
 ################
