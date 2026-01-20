@@ -1,0 +1,61 @@
+name: DVC Data Quality Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**/*.dvc'
+      - 'dvc.lock'
+      - 'dvc.yaml'
+      - '.dvc/**'
+      - 'configs/**'
+
+jobs:
+  data_audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Auth with GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Configure DVC Remote
+        run: |
+          uv run dvc remote modify myremote --local \
+            credentialpath .gcp_key.json
+          echo '${{ secrets.GCP_SA_KEY }}' > .gcp_key.json
+
+      - name: Pull data from GCS
+        run: uv run dvc pull
+
+      - name: Run Data Pipeline and Generate Stats
+        run: |
+          uv run dvc repro
+          uv run python src/stuperml/data.py > report.md
+
+      - name: Setup CML
+        uses: iterative/setup-cml@v2
+
+      - name: Post Quality Report to PR
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cml comment create report.md --watermark-title="Data Checker"
