@@ -1,0 +1,20 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: uv run python src/stuperml/data.py
+    deps:
+    - path: configs/
+      hash: md5
+      md5: f524ce525bfbc06976044d02ee7eb9e2.dir
+      size: 4878
+      nfiles: 5
+    - path: src/stuperml/data.py
+      hash: md5
+      md5: 0a158767058602ef339681ec4e24279e
+      size: 6171
+    outs:
+    - path: data/
+      hash: md5
+      md5: bc872b7b468236c937a771c890939ed9.dir
+      size: 1296465
+      nfiles: 9

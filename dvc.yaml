@@ -1,0 +1,8 @@
+stages:
+  prepare:
+    cmd: uv run python src/stuperml/data.py
+    deps:
+      - src/stuperml/data.py
+      - configs/               
+    outs:
+      - data/                  
