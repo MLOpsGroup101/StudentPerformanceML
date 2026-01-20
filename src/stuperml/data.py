@@ -1,6 +1,8 @@
 import json
 import os
+import matplotlib.pyplot as plt
 from pathlib import Path
+import seaborn as sns
 from typing import Optional
 
 from loguru import logger
@@ -49,7 +51,7 @@ class MyDataset(Dataset):
             logger.debug(f"Loading preprocessed tensors from {x_path} and {y_path}.")
             self.X = torch.load(x_path)
             self.y = torch.load(y_path)
-            logger.info(f"Loaded {len(self.X)} samples for split '{self.split}'.")
+            logger.info(f"Loaded {self.X.size(0)} samples for split '{self.split}'.")
         else:
             logger.warning(f"Preprocessed data not found at {x_path} and {y_path}. Call preprocess() first.")
 
@@ -145,16 +147,51 @@ class MyDataset(Dataset):
 
         return train_set, val_set, test_set
 
+def generate_report(train_set, val_set, test_set, cfg):
+    report_data = []
+    for name, ds in [("Train", train_set), ("Val", val_set), ("Test", test_set)]:
+        X, y = ds.tensors
+        report_data.append({
+            "Split": name,
+            "Samples": len(X),
+            "Features": X.shape[1],
+            "Target Mean": f"{y.mean().item():.4f}",
+            "Target Std": f"{y.std().item():.4f}",
+            "Contains NaN": torch.isnan(X).any().item()
+        })
+
+    df_stats = pd.DataFrame(report_data)
+    
+    print("## Data Quality Report")
+    print(f"\n**Data Folder:** `{cfg.data_folder}`")
+    print(df_stats.to_markdown(index=False))
+
+    sns.set_theme(style="whitegrid")
+    plt.figure(figsize=(10, 6))
+    
+    for name, ds in [("Train", train_set), ("Val", val_set), ("Test", test_set)]:
+        sns.kdeplot(ds.tensors[1].numpy().flatten(), label=name, fill=True)
+    
+    plt.title("Target Distribution Across Splits")
+    plt.xlabel(cfg.target_col)
+    plt.legend()
+    
+    plot_path = "reports/figures/dist_plot.png"
+    plt.savefig(plot_path)
+    plt.close()
+
+    print(f"\n### Distribution Shift Check\n![Distributions](./{plot_path})")
 
 def main() -> None:
     dataset_manager = MyDataset(cfg=data_config)
 
     dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
-
+    
     for dataset in [train_set, val_set, test_set]:
         print(f"rows:{len(dataset)} \t features:{len(dataset[0][0])} \t target:{len(dataset[1][0])}")
 
+    generate_report(train_set, val_set, test_set, data_config)
 
 if __name__ == "__main__":
     typer.run(main)
