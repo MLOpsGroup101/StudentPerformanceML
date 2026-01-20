@@ -1,0 +1,5 @@
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = gs://superml-dvc-store
+    credentialpath = ../stuperml-e4e7c60b7b19.json
