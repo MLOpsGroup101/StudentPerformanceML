@@ -9,7 +9,6 @@ on:
       - 'dvc.lock'
       - 'dvc.yaml'
       - '.dvc/**'
-      - 'src/stuperml/**'
       - 'configs/**'
 
 jobs:
