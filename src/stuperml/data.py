@@ -147,51 +147,56 @@ class MyDataset(Dataset):
 
         return train_set, val_set, test_set
 
+
 def generate_report(train_set, val_set, test_set, cfg):
     report_data = []
     for name, ds in [("Train", train_set), ("Val", val_set), ("Test", test_set)]:
         X, y = ds.tensors
-        report_data.append({
-            "Split": name,
-            "Samples": len(X),
-            "Features": X.shape[1],
-            "Target Mean": f"{y.mean().item():.4f}",
-            "Target Std": f"{y.std().item():.4f}",
-            "Contains NaN": torch.isnan(X).any().item()
-        })
+        report_data.append(
+            {
+                "Split": name,
+                "Samples": len(X),
+                "Features": X.shape[1],
+                "Target Mean": f"{y.mean().item():.4f}",
+                "Target Std": f"{y.std().item():.4f}",
+                "Contains NaN": torch.isnan(X).any().item(),
+            }
+        )
 
     df_stats = pd.DataFrame(report_data)
-    
+
     print("## Data Quality Report")
     print(f"\n**Data Folder:** `{cfg.data_folder}`")
     print(df_stats.to_markdown(index=False))
 
     sns.set_theme(style="whitegrid")
     plt.figure(figsize=(10, 6))
-    
+
     for name, ds in [("Train", train_set), ("Val", val_set), ("Test", test_set)]:
         sns.kdeplot(ds.tensors[1].numpy().flatten(), label=name, fill=True)
-    
+
     plt.title("Target Distribution Across Splits")
     plt.xlabel(cfg.target_col)
     plt.legend()
-    
+
     plot_path = "reports/figures/dist_plot.png"
     plt.savefig(plot_path)
     plt.close()
 
     print(f"\n### Distribution Shift Check\n![Distributions](./{plot_path})")
 
+
 def main() -> None:
     dataset_manager = MyDataset(cfg=data_config)
 
     dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
-    
+
     for dataset in [train_set, val_set, test_set]:
         print(f"rows:{len(dataset)} \t features:{len(dataset[0][0])} \t target:{len(dataset[1][0])}")
 
     generate_report(train_set, val_set, test_set, data_config)
+
 
 if __name__ == "__main__":
     typer.run(main)
