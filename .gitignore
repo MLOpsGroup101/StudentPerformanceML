@@ -177,3 +177,4 @@ cython_debug/
 #.idea/
 data/
 stuperml-e4e7c60b7b19.json
+/data

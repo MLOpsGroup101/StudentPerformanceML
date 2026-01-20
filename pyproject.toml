@@ -34,6 +34,7 @@ dependencies = [
     "requests>=2.32.5",
     "loguru>=0.7.3",
     "streamlit>=1.53.0",
+    "dvc[gs]>=3.66.1",
 ]
 
 [dependency-groups]

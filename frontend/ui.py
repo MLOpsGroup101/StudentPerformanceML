@@ -20,7 +20,6 @@ a student's final score based on their study habits and AI usage.
 # INPUT FORM
 # ---------------------------------------------------------
 with st.form("prediction_form"):
-    
     st.subheader("1. Student Profile")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -43,7 +42,7 @@ with st.form("prediction_form"):
 
     st.subheader("3. AI Usage 🤖")
     uses_ai = st.checkbox("Uses AI Tools?", value=True)
-    
+
     col6, col7 = st.columns(2)
     with col6:
         ai_tool = st.selectbox("Main AI Tool", ["ChatGPT", "Claude", "Gemini", "Copilot", "None"])
@@ -59,15 +58,13 @@ with st.form("prediction_form"):
 # LOGIC
 # ---------------------------------------------------------
 if submitted:
-
     payload = {
         "rows": [
             {
                 # DUMMY FIELD (Required by model but not used for prediction)
-                "student_id": 0, 
+                "student_id": 0,
                 "passed": 0,
                 "performance_category": "Medium",
-
                 # USER INPUTS
                 "age": age,
                 "gender": gender,
@@ -78,14 +75,12 @@ if submitted:
                 "last_exam_score": prev_score,
                 "assignment_scores_avg": assignment_avg,
                 "study_consistency_index": consistency,
-                
                 # AI INPUTS
                 "uses_ai": 1 if uses_ai else 0,
                 "ai_tools_used": ai_tool,
                 "ai_usage_purpose": ai_purpose,
                 "ai_usage_time_minutes": ai_time,
                 "ai_ethics_score": ai_ethics,
-
                 # DEFAULTS (Filling in the minor features we didn't ask for)
                 "social_media_hours": 2.0,
                 "tutoring_hours": 0.0,
@@ -103,12 +98,11 @@ if submitted:
     try:
         with st.spinner("Asking the AI model..."):
             response = requests.post(API_URL, json=payload)
-        
+
         if response.status_code == 200:
             prediction = response.json()["predictions"][0]
             st.balloons()
             st.success(f"### Predicted Final Score: {prediction:.2f} / 100")
-            
 
             if prediction > 85:
                 st.write("🌟 Amazing! Keep up the good work!")
