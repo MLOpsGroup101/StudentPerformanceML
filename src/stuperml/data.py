@@ -191,10 +191,6 @@ def main() -> None:
 
     dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
-
-    for dataset in [train_set, val_set, test_set]:
-        print(f"rows:{len(dataset)} \t features:{len(dataset[0][0])} \t target:{len(dataset[1][0])}")
-
     generate_report(train_set, val_set, test_set, data_config)
 
 
