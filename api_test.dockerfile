@@ -13,6 +13,7 @@ RUN uv sync --frozen --no-install-project
 COPY src/ src/
 COPY README.md README.md
 COPY LICENSE LICENSE
+COPY reports/ reports/
 
 # copy artifacts (models, data) needed for the API
 COPY models/ models/
