@@ -14,6 +14,7 @@ COPY src/ src/
 COPY README.md README.md
 COPY LICENSE LICENSE
 COPY reports/ reports/
+COPY .dvc/ .dvc/
 
 # copy artifacts (models, data) needed for the API
 COPY models/ models/
@@ -24,4 +25,4 @@ RUN uv sync --frozen
 # define the command to run the API
 # Cloud Run injects a $PORT environment variable, 8080 is the default.
 # --host 0.0.0.0 makes it accessible outside the container.
-ENTRYPOINT ["/bin/sh", "-c", "uv run src/stuperml/data.py && uv run uvicorn src.stuperml.api:app --host 0.0.0.0 --port 8080"]
+ENTRYPOINT ["/bin/sh", "-c", "uv run dvc pull && uv run uvicorn src.stuperml.api:app --host 0.0.0.0 --port 8080"]

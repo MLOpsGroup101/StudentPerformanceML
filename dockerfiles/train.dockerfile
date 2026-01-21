@@ -4,14 +4,15 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 WORKDIR /app
 
 COPY uv.lock pyproject.toml ./
-COPY configs/ configs/
 
 RUN uv sync --frozen --no-install-project
 
 # Copy source code and data
 COPY src/ src/
+COPY configs/ configs/
 COPY README.md LICENSE ./
 COPY reports/ reports/
+COPY .dvc/ .dvc/
 
 RUN uv sync --frozen
 
@@ -19,7 +20,7 @@ RUN uv sync --frozen
 RUN mkdir -p models src/stuperml/figures logs
 
 
-ENTRYPOINT ["/bin/sh", "-c", "uv run src/stuperml/data.py && uv run src/stuperml/train.py"]
+ENTRYPOINT ["/bin/sh", "-c", "uv run dvc pull && uv run src/stuperml/train.py"]
 
 ################
 # Usage example:
