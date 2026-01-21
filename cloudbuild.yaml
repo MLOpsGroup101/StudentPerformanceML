@@ -1,0 +1,61 @@
+steps:
+  # --- BUILD STEPS ---
+  # 1. Build API
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-api'
+    args: ['build', '-f', 'dockerfiles/api.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-api', '.']
+    waitFor: ['-']
+
+  # 2. Build Train
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-train'
+    args: ['build', '-f', 'dockerfiles/train.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-train', '.']
+    waitFor: ['-']
+
+  # 3. Build Evaluate
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-evaluate'
+    args: ['build', '-f', 'dockerfiles/evaluate.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-evaluate', '.']
+    waitFor: ['-']
+
+  # 4. Build Frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-frontend'
+    args: ['build', '-f', 'dockerfiles/frontend.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-frontend', '.']
+    waitFor: ['-']
+
+  # --- DEPLOY STEPS ---
+  # 5. Deploy API to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-api'
+    entrypoint: 'gcloud'
+    waitFor: ['build-api']
+    args:
+      - 'run'
+      - 'deploy'
+      - 'stuperml-api-service'
+      - '--image=gcr.io/$PROJECT_ID/stuperml-api'
+      - '--region=europe-west1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--port=8080'
+
+  # 6. (Optional) Print the Public URL cleanly
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    waitFor: ['deploy-api']
+    args:
+      - '-c'
+      - |
+        echo "******************************************************"
+        echo "API IS LIVE AT:"
+        gcloud run services describe stuperml-api-service --region=europe-west1 --format='value(status.url)'
+        echo "******************************************************"
+
+images:
+  - 'gcr.io/$PROJECT_ID/stuperml-api'
+  - 'gcr.io/$PROJECT_ID/stuperml-train'
+  - 'gcr.io/$PROJECT_ID/stuperml-evaluate'
+  - 'gcr.io/$PROJECT_ID/stuperml-frontend'
