@@ -21,6 +21,7 @@ MODEL_PATH = BASE_DIR / "models" / "model.pth"
 PREPROCESSOR_PATH = data_config.data_folder / "preprocessor.joblib"
 FEATURE_NAMES_PATH = data_config.data_folder / "feature_names.json"
 
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     """Load and release model artifacts for app lifecycle."""
