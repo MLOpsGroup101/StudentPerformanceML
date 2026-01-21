@@ -6,37 +6,41 @@ steps:
     args: ['build', '-f', 'dockerfiles/api.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-api', '.']
     waitFor: ['-']
 
-  # 1.5. PUSH API
-  # We gotta push the image to the registry NOW so Cloud Run can find it in Step 5
+  # 2. Push API (Required for Deploy)
   - name: 'gcr.io/cloud-builders/docker'
     id: 'push-api'
     args: ['push', 'gcr.io/$PROJECT_ID/stuperml-api']
     waitFor: ['build-api']
 
-  # 2. Build Train
+  # 3. Build Train
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-train'
     args: ['build', '-f', 'dockerfiles/train.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-train', '.']
     waitFor: ['-']
 
-  # 3. Build Evaluate
+  # 4. Build Evaluate
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-evaluate'
     args: ['build', '-f', 'dockerfiles/evaluate.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-evaluate', '.']
     waitFor: ['-']
 
-  # 4. Build Frontend
+  # 5. Build Frontend
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-frontend'
     args: ['build', '-f', 'dockerfiles/frontend.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-frontend', '.']
     waitFor: ['-']
 
+  # 6. Push Frontend (Required for Deploy)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-frontend'
+    args: ['push', 'gcr.io/$PROJECT_ID/stuperml-frontend']
+    waitFor: ['build-frontend']
+
   # --- DEPLOY STEPS ---
-  # 5. Deploy API to Cloud Run
+  # 7. Deploy API
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'deploy-api'
     entrypoint: 'gcloud'
-    # Wait for the PUSH to finish, not just the build
     waitFor: ['push-api']
     args:
       - 'run'
@@ -50,20 +54,22 @@ steps:
       - '--cpu=2'
       - '--port=8080'
 
-  # 6. Print URL
+  # 8. Deploy Frontend
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'print-api-url'
-    entrypoint: 'bash'
-    waitFor: ['deploy-api']
+    id: 'deploy-frontend'
+    entrypoint: 'gcloud'
+    waitFor: ['push-frontend']
     args:
-      - '-c'
-      - |
-        echo "******************************************************"
-        echo "API IS LIVE AT:"
-        gcloud run services describe stuperml-api-service --region=europe-west1 --format='value(status.url)'
-        echo "******************************************************"
+      - 'run'
+      - 'deploy'
+      - 'stuperml-frontend-service'
+      - '--image=gcr.io/$PROJECT_ID/stuperml-frontend'
+      - '--region=europe-west1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=1Gi'
+      - '--port=8080'
 
-# It is okay to list the image here again; Cloud Build is smart enough not to upload it twice.
 images:
   - 'gcr.io/$PROJECT_ID/stuperml-api'
   - 'gcr.io/$PROJECT_ID/stuperml-train'
