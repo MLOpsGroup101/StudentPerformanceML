@@ -1,0 +1,42 @@
+name: Build and Push to Artifact Registry
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  PROJECT_ID: stuperml
+  REGION: europe-central2
+  GAR_REPO: app-images
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 1. Authenticate with Google Cloud
+      - name: Google Auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY_DEPLOYER }}'
+
+      # 2. Configure Docker to talk to your Warsaw (europe-central2) Registry
+      - name: Authorize Docker
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      # 3. Build & Push API Image
+      # Logic: -f points to the Dockerfile, '.' sets the root as the build context
+      - name: Build and Push API
+        run: |
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/api:${{ github.sha }} \
+            -f dockerfiles/api.dockerfile .
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/api:${{ github.sha }}
+
+      # 4. Build & Push UI Image
+      - name: Build and Push UI
+        run: |
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/ui:${{ github.sha }} \
+            -f dockerfiles/frontend.dockerfile .
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPO }}/ui:${{ github.sha }}
