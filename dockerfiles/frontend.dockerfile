@@ -14,4 +14,4 @@ COPY frontend/ frontend/
 EXPOSE 8080
 
 # Run Streamlit
-ENTRYPOINT ["/bin/sh", "-c", "uv run src/stuperml/data.py && uv run streamlit run frontend/ui.py --server.port=8080 --server.address=0.0.0.0"]
+ENTRYPOINT ["/bin/sh", "-c", "uv run streamlit run frontend/ui.py --server.port=8080 --server.address=0.0.0.0"]
