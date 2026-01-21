@@ -10,7 +10,6 @@ RUN uv sync --frozen --no-install-project
 
 # Copy source code and data
 COPY src/ src/
-COPY data/ data/
 COPY README.md LICENSE ./
 
 RUN uv sync --frozen
@@ -18,8 +17,8 @@ RUN uv sync --frozen
 # Create output directories
 RUN mkdir -p src/stuperml/figures logs
 
-ENTRYPOINT ["uv", "run", "src/stuperml/evaluate.py"]
-
+# RIGHT: Shell handles '&&', and we invoke 'uv run' twice
+ENTRYPOINT ["/bin/sh", "-c", "uv run src/stuperml/data.py && uv run src/stuperml/evaluate.py"]
 
 ################
 # Usage example:

@@ -10,7 +10,6 @@ RUN uv sync --frozen --no-install-project
 
 # Copy source code and data
 COPY src/ src/
-COPY data/ data/
 COPY README.md LICENSE ./
 
 RUN uv sync --frozen
@@ -19,8 +18,7 @@ RUN uv sync --frozen
 RUN mkdir -p models src/stuperml/figures logs
 
 
-ENTRYPOINT ["uv", "run", "src/stuperml/train.py"]
-
+ENTRYPOINT ["/bin/sh", "-c", "uv run src/stuperml/data.py && uv run src/stuperml/train.py"]
 
 ################
 # Usage example:
