@@ -11,6 +11,7 @@ RUN uv sync --frozen --no-install-project
 # Copy source code and data
 COPY src/ src/
 COPY README.md LICENSE ./
+COPY reports/ reports/
 
 RUN uv sync --frozen
 
