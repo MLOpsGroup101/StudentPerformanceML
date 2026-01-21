@@ -43,7 +43,7 @@ steps:
       - '--cache=true'
     waitFor: ['-']
 
-  # 5. Deploy API (FIXED INDENTATION)
+  # 5. Deploy API
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-api'
     waitFor: ['build-api']
@@ -54,13 +54,12 @@ steps:
       - '--image=europe-west1-docker.pkg.dev/$PROJECT_ID/app-images/api:latest'
       - '--region=europe-west1'
       - '--platform=managed'
-      - '--service-account=github-deployer@stuperml.iam.gserviceaccount.com'
       - '--allow-unauthenticated'
       - '--memory=2Gi'
       - '--cpu=2'
       - '--port=8080'
 
-  # 6. Deploy Frontend (FIXED INDENTATION)
+  # 6. Deploy Frontend
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-frontend'
     waitFor: ['build-frontend']
