@@ -1,6 +1,6 @@
 site_name: stuperml
 site_author: MLOpsGroup101
-docs_dir: source
+docs_dir: docs/source
 
 theme:
   language: en
