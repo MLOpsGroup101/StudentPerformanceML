@@ -17,14 +17,10 @@ COPY LICENSE LICENSE
 # copy artifacts (models, data) needed for the API
 COPY models/ models/
 
-RUN mkdir data
-# # retrieve data
-# RUN uv run src.stuperml.data.py
-
 # install the project itself
 RUN uv sync --frozen
 
 # define the command to run the API
 # Cloud Run injects a $PORT environment variable, 8080 is the default.
 # --host 0.0.0.0 makes it accessible outside the container.
-ENTRYPOINT ["uv", "run", "uvicorn", "src.stuperml.api:app", "--host", "0.0.0.0", "--port", "8080"]
+ENTRYPOINT ["/bin/sh", "-c", "uv run src/stuperml/data.py && uv run uvicorn src.stuperml.api:app --host 0.0.0.0 --port 8080"]
