@@ -17,6 +17,7 @@ COPY LICENSE LICENSE
 # copy artifacts (models, data) needed for the API
 COPY models/ models/
 
+RUN mkdir data
 # # retrieve data
 # RUN uv run src.stuperml.data.py
 
