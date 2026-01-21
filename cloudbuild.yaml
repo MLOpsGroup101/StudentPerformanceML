@@ -1,52 +1,61 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
-  # --- BUILD STEPS ---
-  # 1. Build API
-  - name: 'gcr.io/cloud-builders/docker'
+  # --- BUILD & PUSH STEPS ---
+  
+  # 1. API
+  - name: 'gcr.io/kaniko-project/executor:latest'
     id: 'build-api'
-    args: ['build', '-f', 'dockerfiles/api.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-api', '.']
+    args:
+      - '--destination=europe-west1-docker.pkg.dev/$PROJECT_ID/app-images/api:latest'
+      - '--dockerfile=dockerfiles/api.dockerfile'
+      - '--context=.'
+      - '--cache=true'
     waitFor: ['-']
 
-  # 2. Push API (Required for Deploy)
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'push-api'
-    args: ['push', 'gcr.io/$PROJECT_ID/stuperml-api']
-    waitFor: ['build-api']
-
-  # 3. Build Train
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-train'
-    args: ['build', '-f', 'dockerfiles/train.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-train', '.']
-    waitFor: ['-']
-
-  # 4. Build Evaluate
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'build-evaluate'
-    args: ['build', '-f', 'dockerfiles/evaluate.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-evaluate', '.']
-    waitFor: ['-']
-
-  # 5. Build Frontend
-  - name: 'gcr.io/cloud-builders/docker'
+  # 2. Frontend
+  - name: 'gcr.io/kaniko-project/executor:latest'
     id: 'build-frontend'
-    args: ['build', '-f', 'dockerfiles/frontend.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-frontend', '.']
+    args:
+      - '--destination=europe-west1-docker.pkg.dev/$PROJECT_ID/app-images/frontend:latest'
+      - '--dockerfile=dockerfiles/frontend.dockerfile'
+      - '--context=.'
+      - '--cache=true'
     waitFor: ['-']
 
-  # 6. Push Frontend (Required for Deploy)
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'push-frontend'
-    args: ['push', 'gcr.io/$PROJECT_ID/stuperml-frontend']
-    waitFor: ['build-frontend']
+  # 3. Train
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    id: 'build-train'
+    args:
+      - '--destination=europe-west1-docker.pkg.dev/$PROJECT_ID/app-images/train:latest'
+      - '--dockerfile=dockerfiles/train.dockerfile'
+      - '--context=.'
+      - '--cache=true'
+    waitFor: ['-']
+
+  # 4. Evaluate
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    id: 'build-evaluate'
+    args:
+      - '--destination=europe-west1-docker.pkg.dev/$PROJECT_ID/app-images/evaluate:latest'
+      - '--dockerfile=dockerfiles/evaluate.dockerfile'
+      - '--context=.'
+      - '--cache=true'
+    waitFor: ['-']
 
   # --- DEPLOY STEPS ---
-  # 7. Deploy API
+
+  # 5. Deploy API
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'deploy-api'
     entrypoint: 'gcloud'
-    waitFor: ['push-api']
+    waitFor: ['build-api']
     args:
       - 'run'
       - 'deploy'
       - 'stuperml-api-service'
-      - '--image=gcr.io/$PROJECT_ID/stuperml-api'
+      - '--image=europe-west1-docker.pkg.dev/$PROJECT_ID/app-images/api:latest'
       - '--region=europe-west1'
       - '--platform=managed'
       - '--allow-unauthenticated'
@@ -54,24 +63,18 @@ steps:
       - '--cpu=2'
       - '--port=8080'
 
-  # 8. Deploy Frontend
+  # 6. Deploy Frontend
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'deploy-frontend'
     entrypoint: 'gcloud'
-    waitFor: ['push-frontend']
+    waitFor: ['build-frontend']
     args:
       - 'run'
       - 'deploy'
       - 'stuperml-frontend-service'
-      - '--image=gcr.io/$PROJECT_ID/stuperml-frontend'
+      - '--image=europe-west1-docker.pkg.dev/$PROJECT_ID/app-images/frontend:latest'
       - '--region=europe-west1'
       - '--platform=managed'
       - '--allow-unauthenticated'
       - '--memory=1Gi'
       - '--port=8080'
-
-images:
-  - 'gcr.io/$PROJECT_ID/stuperml-api'
-  - 'gcr.io/$PROJECT_ID/stuperml-train'
-  - 'gcr.io/$PROJECT_ID/stuperml-evaluate'
-  - 'gcr.io/$PROJECT_ID/stuperml-frontend'
