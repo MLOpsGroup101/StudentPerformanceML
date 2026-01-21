@@ -1,6 +1,6 @@
 options:
   logging: CLOUD_LOGGING_ONLY
-  service_account: 'projects/stuperml/serviceAccounts/github-deployer@stuperml.iam.gserviceaccount.com'
+  serviceAccount: 'projects/stuperml/serviceAccounts/github-deployer@stuperml.iam.gserviceaccount.com'
 
 steps:
   # 1. API
