@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
 from http import HTTPStatus
 import json
 from pathlib import Path
@@ -20,7 +21,19 @@ MODEL_PATH = BASE_DIR / "models" / "model.pth"
 PREPROCESSOR_PATH = data_config.data_folder / "preprocessor.joblib"
 FEATURE_NAMES_PATH = data_config.data_folder / "feature_names.json"
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    """Load and release model artifacts for app lifecycle."""
+    global _model, _preprocessor
+    _model, _preprocessor = _load_model()
+    try:
+        yield
+    finally:
+        _model = None
+        _preprocessor = None
+
+
+app = FastAPI(lifespan=lifespan)
 _model: SimpleMLP | None = None
 _preprocessor: Any | None = None
 
@@ -58,13 +71,6 @@ def _load_model() -> tuple[SimpleMLP, Any]:
     model.load_state_dict(torch.load(MODEL_PATH, map_location="cpu"))
     model.eval()
     return model, preprocessor
-
-
-@app.on_event("startup")
-def load_artifacts() -> None:
-    """Load model artifacts on startup."""
-    global _model, _preprocessor
-    _model, _preprocessor = _load_model()
 
 
 @app.get("/")
