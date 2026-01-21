@@ -1,10 +1,8 @@
 options:
   logging: CLOUD_LOGGING_ONLY
-  serviceAccount: 'projects/stuperml/serviceAccounts/github-deployer@stuperml.iam.gserviceaccount.com'
+  service_account: 'projects/stuperml/serviceAccounts/github-deployer@stuperml.iam.gserviceaccount.com'
 
 steps:
-  # --- BUILD & PUSH STEPS ---
-  
   # 1. API
   - name: 'gcr.io/kaniko-project/executor:latest'
     id: 'build-api'
@@ -45,9 +43,7 @@ steps:
       - '--cache=true'
     waitFor: ['-']
 
-  # --- DEPLOY STEPS ---
-
-# 5. Deploy API
+  # 5. Deploy API (FIXED INDENTATION)
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-api'
     waitFor: ['build-api']
@@ -64,7 +60,7 @@ steps:
       - '--cpu=2'
       - '--port=8080'
 
-  # 6. Deploy Frontend
+  # 6. Deploy Frontend (FIXED INDENTATION)
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-frontend'
     waitFor: ['build-frontend']
