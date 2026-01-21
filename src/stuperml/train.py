@@ -104,7 +104,7 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
         print(f"Plot saved to gs://{bucket_name}/{plot_blob_path}")
     else:
         os.makedirs("models", exist_ok=True)
-        torch.save(model.state_dict(), f"models/model.pth")
+        torch.save(model.state_dict(), "models/model.pth")
         print("Saved locally.")
 
     plt.figure(figsize=(10, 5))
