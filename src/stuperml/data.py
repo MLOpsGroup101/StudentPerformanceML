@@ -1,6 +1,7 @@
 import json
 import os
 import matplotlib.pyplot as plt
+from dataclasses import asdict
 from pathlib import Path
 import seaborn as sns
 from typing import Optional
@@ -47,7 +48,7 @@ class MyDataset(Dataset):
 
         x_path = self.cfg.data_folder / f"X_{self.split}.pt"
         y_path = self.cfg.data_folder / f"y_{self.split}.pt"
-        if x_path.exists() and y_path.exists():
+        if x_path.exists() and y_path.exists() and self._config_matches(self.cfg):
             logger.debug(f"Loading preprocessed tensors from {x_path} and {y_path}.")
             self.X = torch.load(x_path)
             self.y = torch.load(y_path)
@@ -135,9 +136,50 @@ class MyDataset(Dataset):
 
         (self.cfg.data_folder / "feature_names.json").write_text(json.dumps(feat_names))
         joblib.dump(pre, self.cfg.data_folder / "preprocessor.joblib")
+        self._write_config(self.cfg)
         logger.info("Preprocessing complete - data splits and preprocessor saved.")
 
+    def _serialize_config(self, cfg: DataConfig) -> dict[str, object]:
+        """Return a JSON-serializable snapshot of config for equality checks."""
+        config = asdict(cfg)
+        config["data_folder"] = str(cfg.data_folder)
+        config["dropped_columns"] = sorted(cfg.dropped_columns)
+        return config
+
+    def _write_config(self, cfg: DataConfig) -> None:
+        """Persist data configuration used to generate artifacts."""
+        config_path = cfg.data_folder / "data_config.json"
+        config_path.write_text(json.dumps(self._serialize_config(cfg), sort_keys=True))
+
+    def _config_matches(self, cfg: DataConfig) -> bool:
+        """Check whether on-disk configuration matches the current config."""
+        config_path = cfg.data_folder / "data_config.json"
+        if not config_path.exists():
+            return False
+        stored = json.loads(config_path.read_text())
+        current = self._serialize_config(cfg)
+        return stored == current
+
+    def _ensure_preprocessed(self) -> None:
+        """Ensure preprocessing artifacts exist and match the current config."""
+        required = [
+            self.cfg.data_folder / "X_train.pt",
+            self.cfg.data_folder / "X_val.pt",
+            self.cfg.data_folder / "X_test.pt",
+            self.cfg.data_folder / "y_train.pt",
+            self.cfg.data_folder / "y_val.pt",
+            self.cfg.data_folder / "y_test.pt",
+            self.cfg.data_folder / "feature_names.json",
+            self.cfg.data_folder / "preprocessor.joblib",
+        ]
+        if not all(path.exists() for path in required) or not self._config_matches(self.cfg):
+            logger.info("Preprocessing artifacts missing or config changed; regenerating.")
+            self.X = None
+            self.y = None
+            self.preprocess()
+
     def load_data(self) -> tuple[TensorDataset, TensorDataset, TensorDataset]:
+        self._ensure_preprocessed()
         data_dir: Path
         data_dir = self.cfg.data_folder
 
