@@ -20,10 +20,9 @@ COPY .dvc/ .dvc/
 COPY models/ models/
 
 # install the project itself
-RUN uv sync --frozen 
-RUN uv run dvc pull
+RUN uv sync --frozen
 
 # define the command to run the API
 # Cloud Run injects a $PORT environment variable, 8080 is the default.
 # --host 0.0.0.0 makes it accessible outside the container.
-ENTRYPOINT ["uv", "run", "uvicorn", "src.stuperml.api:app", "--host", "0.0.0.0", "--port", "8080"]
+ENTRYPOINT ["/bin/sh", "-c", "time uv run dvc pull -v && uv run uvicorn src.stuperml.api:app --host 0.0.0.0 --port 8080"]
