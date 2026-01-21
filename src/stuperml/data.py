@@ -200,7 +200,7 @@ def main() -> None:
 
     dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
-    generate_report(train_set, val_set, test_set, data_config)
+    # generate_report(train_set, val_set, test_set, data_config)
 
 
 if __name__ == "__main__":
