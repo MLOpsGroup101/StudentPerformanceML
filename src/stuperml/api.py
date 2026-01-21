@@ -14,7 +14,9 @@ from pydantic import BaseModel, Field
 from configs import data_config
 from stuperml.model import SimpleMLP
 
-MODEL_PATH = Path("models/model.pth")
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+MODEL_PATH = BASE_DIR / "models" / "model.pth"
+
 PREPROCESSOR_PATH = data_config.data_folder / "preprocessor.joblib"
 FEATURE_NAMES_PATH = data_config.data_folder / "feature_names.json"
 
