@@ -73,16 +73,17 @@ class MyDataset(Dataset):
 
         if self.cfg.gcs_uri:
             logger.debug("Using GCS data source")
-
-        if (self.cfg.gcs_service_account_key 
-            and "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ 
-            and os.path.exists(self.cfg.gcs_service_account_key)):
-            
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.cfg.gcs_service_account_key
-
-        elif not os.path.exists(self.cfg.gcs_service_account_key):
-            print(f"Notice: Service account key '{self.cfg.gcs_service_account_key}' not found. "
-                "Assuming we are running in Cloud Run/Environment with auto-auth.")
+            if (
+                self.cfg.gcs_service_account_key
+                and "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ
+                and os.path.exists(self.cfg.gcs_service_account_key)
+            ):
+                os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = self.cfg.gcs_service_account_key
+            elif self.cfg.gcs_service_account_key and not os.path.exists(self.cfg.gcs_service_account_key):
+                print(
+                    f"Notice: Service account key '{self.cfg.gcs_service_account_key}' not found. "
+                    "Assuming we are running in Cloud Run/Environment with auto-auth."
+                )
 
             gcs_uri = self.cfg.gcs_uri
             if self.cfg.gcs_data:
