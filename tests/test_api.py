@@ -1,53 +1,54 @@
-import requests
+from __future__ import annotations
 
-# Cloud Run URL
-URL = "https://stuperml-manual-709612871775.europe-west1.run.app/predict"
+from typing import Any
 
-# Define the payload
-payload = {
-    "rows": [
-        {
-            "student_id": 0,
-            "age": 20,
-            "gender": "Female",  # Raw string (not gender_Female as api handles encoding)
-            "grade_level": "2nd Year",  # Raw string
-            "study_hours_per_day": 5.5,
-            "attendance_percentage": 92.0,
-            "study_consistency_index": 0.8,
-            "sleep_hours": 7.5,
-            "social_media_hours": 2.0,
-            "tutoring_hours": 1.0,
-            "uses_ai": 1,  # 1 = Yes
-            "ai_tools_used": "ChatGPT",  # Raw string
-            "ai_usage_purpose": "Exam Prep",  # Raw string
-            "ai_usage_time_minutes": 45,
-            "ai_dependency_score": 0.4,
-            "ai_generated_content_percentage": 0.2,
-            "ai_prompts_per_week": 15,
-            "ai_ethics_score": 0.85,
-            "last_exam_score": 82.0,
-            "assignment_scores_avg": 88.5,
-            "concept_understanding_score": 0.75,
-            "improvement_rate": 0.05,
-            "class_participation_score": 0.9,
-            "passed": 1,
-            "performance_category": "Medium",
+import numpy as np
+import torch
+from fastapi.testclient import TestClient
+
+import stuperml.api as api_module
+
+
+class DummyPreprocessor:
+    """Minimal preprocessor stub for API tests."""
+
+    def transform(self, df) -> np.ndarray:
+        """Return a fixed-size numeric array for predictions."""
+        return np.zeros((len(df), 2), dtype=np.float32)
+
+
+class DummyModel(torch.nn.Module):
+    """Minimal model stub for API tests."""
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Return zeros with the correct batch shape."""
+        return torch.zeros((x.shape[0], 1), dtype=torch.float32)
+
+
+def _patch_load_model(monkeypatch) -> None:
+    """Patch the model loader to avoid file I/O."""
+    monkeypatch.setattr(api_module, "_load_model", lambda: (DummyModel(), DummyPreprocessor()))
+
+
+def test_root_healthcheck(monkeypatch) -> None:
+    """Ensure the healthcheck endpoint responds successfully."""
+    _patch_load_model(monkeypatch)
+    with TestClient(api_module.app) as client:
+        response = client.get("/")
+    assert response.status_code == 200
+    assert response.json()["message"] == "OK"
+
+
+def test_predict(monkeypatch) -> None:
+    """Ensure prediction endpoint returns a list of floats."""
+    _patch_load_model(monkeypatch)
+    with TestClient(api_module.app) as client:
+        payload: dict[str, Any] = {
+            "rows": [
+                {"feature_a": 1.0, "feature_b": 2.0},
+                {"feature_a": 3.0, "feature_b": 4.0},
+            ]
         }
-    ]
-}
-
-# Send Request
-try:
-    print(f"Sending request to {URL}...")
-    response = requests.post(URL, json=payload)
-
-    if response.status_code == 200:
-        result = response.json()
-        print("\n✅ Success!")
-        print(f"Predicted Final Score: {result['predictions'][0]}")
-    else:
-        print(f"\n❌ Error {response.status_code}")
-        print("Details:", response.text)
-
-except Exception as e:
-    print(f"\n❌ Connection Failed: {e}")
+        response = client.post("/predict", json=payload)
+    assert response.status_code == 200
+    assert response.json() == {"predictions": [0.0, 0.0]}

@@ -1,0 +1,80 @@
+steps:
+  # --- BUILD STEPS ---
+  # 1. Build API
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-api'
+    args: ['build', '-f', 'dockerfiles/api.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-api', '.']
+    waitFor: ['-']
+
+  # 2. Push API (Required for Deploy)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-api'
+    args: ['push', 'gcr.io/$PROJECT_ID/stuperml-api']
+    waitFor: ['build-api']
+
+  # 3. Build Train
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-train'
+    args: ['build', '-f', 'dockerfiles/train.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-train', '.']
+    waitFor: ['-']
+
+  # 4. Build Evaluate
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-evaluate'
+    args: ['build', '-f', 'dockerfiles/evaluate.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-evaluate', '.']
+    waitFor: ['-']
+
+  # 5. Build Frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-frontend'
+    args: ['build', '-f', 'dockerfiles/frontend.dockerfile', '-t', 'gcr.io/$PROJECT_ID/stuperml-frontend', '.']
+    waitFor: ['-']
+
+  # 6. Push Frontend (Required for Deploy)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-frontend'
+    args: ['push', 'gcr.io/$PROJECT_ID/stuperml-frontend']
+    waitFor: ['build-frontend']
+
+  # --- DEPLOY STEPS ---
+  # 7. Deploy API
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-api'
+    entrypoint: 'gcloud'
+    waitFor: ['push-api']
+    args:
+      - 'run'
+      - 'deploy'
+      - 'stuperml-api-service'
+      - '--image=gcr.io/$PROJECT_ID/stuperml-api'
+      - '--region=europe-west1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=2Gi'
+      - '--cpu=2'
+      - '--port=8080'
+
+  # 8. Deploy Frontend
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-frontend'
+    entrypoint: 'gcloud'
+    waitFor: ['push-frontend']
+    args:
+      - 'run'
+      - 'deploy'
+      - 'stuperml-frontend-service'
+      - '--image=gcr.io/$PROJECT_ID/stuperml-frontend'
+      - '--region=europe-west1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--memory=1Gi'
+      - '--port=8080'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  
+images:
+  - 'gcr.io/$PROJECT_ID/stuperml-api'
+  - 'gcr.io/$PROJECT_ID/stuperml-train'
+  - 'gcr.io/$PROJECT_ID/stuperml-evaluate'
+  - 'gcr.io/$PROJECT_ID/stuperml-frontend'

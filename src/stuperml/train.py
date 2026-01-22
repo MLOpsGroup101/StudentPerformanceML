@@ -1,16 +1,46 @@
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import torch
 import typer
+from google.cloud import storage
 
 from configs import data_config
 from stuperml.data import MyDataset
 from stuperml.model import SimpleMLP
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+MODEL_DIR = Path("models")
+
+
+def _parse_gcs_uri(uri: str) -> tuple[str, str]:
+    """Parse a GCS URI into bucket name and object prefix."""
+    bucket_path = uri[5:] if uri.startswith("gs://") else uri
+    parts = bucket_path.split("/", 1)
+    if len(parts) != 2 or not parts[1]:
+        raise ValueError("Model GCS URI must include bucket and prefix, e.g. gs://bucket/models")
+    return parts[0], parts[1].rstrip("/")
+
+
+def _upload_model_artifacts(local_model_path: Path, gcs_models_uri: str, timestamp: str) -> None:
+    """Upload the timestamped model artifact to GCS."""
+    bucket_name, prefix = _parse_gcs_uri(gcs_models_uri)
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+
+    stamped_blob = bucket.blob(f"{prefix}/model_{timestamp}.pth")
+    stamped_blob.upload_from_filename(local_model_path.as_posix())
 
 
 def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: bool = False) -> None:
+    """Train the model and persist artifacts."""
     print("Training day and night")
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    print(f"Run ID: {timestamp}")
+
     print(f"{lr=}, {batch_size=}, {epochs=}")
 
     train_set, val_set, _ = MyDataset(cfg=data_config).load_data()
@@ -61,7 +91,21 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
         print(f"Epoch {epoch} \t Summary: Train Loss: {avg_train:.5f}, \t Val Loss: {avg_val:.5f}")
 
     print("Training complete")
-    torch.save(model.state_dict(), "models/model.pth")
+
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    model_path = MODEL_DIR / f"model_{timestamp}.pth"
+    torch.save(model.state_dict(), model_path)
+    print("Saved locally.")
+
+    gcs_models_uri = os.getenv("AIP_MODEL_DIR") or data_config.gcs_models_uri
+    if gcs_models_uri:
+        if (
+            data_config.gcs_service_account_key
+            and "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ
+            and os.path.exists(data_config.gcs_service_account_key)
+        ):
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = data_config.gcs_service_account_key
+        _upload_model_artifacts(model_path, gcs_models_uri, timestamp)
 
     plt.figure(figsize=(10, 5))
     plt.plot(statistics["train_loss"], label="Train Loss")
