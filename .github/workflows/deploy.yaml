@@ -4,9 +4,18 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/stuperml/**'
+      - 'configs/src/configs**'
+      - 'dockerfiles**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'src/stuperml/**'
+      - 'configs/src/configs**'
+      - 'dockerfiles**'
+
 
 jobs:
   deploy:
