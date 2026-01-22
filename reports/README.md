@@ -57,43 +57,43 @@ will check the repositories and the code to verify your answers.
 * [x] Create a dedicated environment for you project to keep track of your packages (M2)
 * [x] Create the initial file structure using cookiecutter with an appropriate template (M6)
 * [x] Fill out the `data.py` file such that it downloads whatever data you need and preprocesses it (if necessary) (M6)
-* [ ] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
-* [ ] Remember to either fill out the `requirements.txt`/`requirements_dev.txt` files or keeping your
+* [x] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
+* [x] Remember to either fill out the `requirements.txt`/`requirements_dev.txt` files or keeping your
     `pyproject.toml`/`uv.lock` up-to-date with whatever dependencies that you are using (M2+M6)
-* [ ] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
-* [ ] Do a bit of code typing and remember to document essential parts of your code (M7)
-* [ ] Setup version control for your data or part of your data (M8)
+* [x] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
+* [x] Do a bit of code typing and remember to document essential parts of your code (M7)
+* [x] Setup version control for your data or part of your data (M8)
 * [ ] Add command line interfaces and project commands to your code where it makes sense (M9)
-* [ ] Construct one or multiple docker files for your code (M10)
-* [ ] Build the docker files locally and make sure they work as intended (M10)
-* [ ] Write one or multiple configurations files for your experiments (M11)
+* [x] Construct one or multiple docker files for your code (M10)
+* [x] Build the docker files locally and make sure they work as intended (M10)
+* [x] Write one or multiple configurations files for your experiments (M11)
 * [ ] Used Hydra to load the configurations and manage your hyperparameters (M11)
 * [ ] Use profiling to optimize your code (M12)
-* [ ] Use logging to log important events in your code (M14)
+* [x] Use logging to log important events in your code (M14)
 * [ ] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
 * [ ] Consider running a hyperparameter optimization sweep (M14)
 * [ ] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
 
 ### Week 2
 
-* [ ] Write unit tests related to the data part of your code (M16)
-* [ ] Write unit tests related to model construction and or model training (M16)
-* [ ] Calculate the code coverage (M16)
-* [ ] Get some continuous integration running on the GitHub repository (M17)
-* [ ] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
-* [ ] Add a linting step to your continuous integration (M17)
+* [x] Write unit tests related to the data part of your code (M16)
+* [x] Write unit tests related to model construction and or model training (M16)
+* [x] Calculate the code coverage (M16)
+* [x] Get some continuous integration running on the GitHub repository (M17)
+* [x] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
+* [x] Add a linting step to your continuous integration (M17)
 * [ ] Add pre-commit hooks to your version control setup (M18)
-* [ ] Add a continues workflow that triggers when data changes (M19)
-* [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
-* [ ] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
-* [ ] Create a trigger workflow for automatically building your docker images (M21)
-* [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
-* [ ] Create a FastAPI application that can do inference using your model (M22)
-* [ ] Deploy your model in GCP using either Functions or Run as the backend (M23)
-* [ ] Write API tests for your application and setup continues integration for these (M24)
+* [x] Add a continues workflow that triggers when data changes (M19)
+* [x] Add a continues workflow that triggers when changes to the model registry is made (M19)
+* [x] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
+* [x] Create a trigger workflow for automatically building your docker images (M21)
+* [x] Get your model training in GCP using either the Engine or Vertex AI (M21)
+* [x] Create a FastAPI application that can do inference using your model (M22)
+* [x] Deploy your model in GCP using either Functions or Run as the backend (M23)
+* [x] Write API tests for your application and setup continues integration for these (M24)
 * [ ] Load test your application (M24)
 * [ ] Create a more specialized ML-deployment API using either ONNX or BentoML, or both (M25)
-* [ ] Create a frontend for your API (M26)
+* [x] Create a frontend for your API (M26)
 
 ### Week 3
 
@@ -102,19 +102,19 @@ will check the repositories and the code to verify your answers.
 * [ ] Deploy to the cloud a drift detection API (M27)
 * [ ] Instrument your API with a couple of system metrics (M28)
 * [ ] Setup cloud monitoring of your instrumented application (M28)
-* [ ] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
+* [x] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
 * [ ] If applicable, optimize the performance of your data loading using distributed data loading (M29)
 * [ ] If applicable, optimize the performance of your training pipeline by using distributed training (M30)
 * [ ] Play around with quantization, compilation and pruning for you trained models to increase inference speed (M31)
 
 ### Extra
 
-* [ ] Write some documentation for your application (M32)
-* [ ] Publish the documentation to GitHub Pages (M32)
+* [x] Write some documentation for your application (M32)
+* [x] Publish the documentation to GitHub Pages (M32)
 * [ ] Revisit your initial project description. Did the project turn out as you wanted?
 * [ ] Create an architectural diagram over your MLOps pipeline
-* [ ] Make sure all group members have an understanding about all parts of the project
-* [ ] Uploaded all your code to GitHub
+* [x] Make sure all group members have an understanding about all parts of the project
+* [x] Uploaded all your code to GitHub
 
 ## Group information
 
@@ -123,7 +123,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 1 fill here ---
+Group 101
 
 ### Question 2
 > **Enter the study number for each member in the group**
@@ -134,7 +134,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 2 fill here ---
+s224189, s234834, s234859, s234805
 
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
@@ -168,7 +168,15 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 4 fill here ---
+Dependencies are managed with `uv` and a single `pyproject.toml` plus `uv.lock`at the project root. 
+
+A new team member would:
+
+1. Install `uv`
+2. Clone the repository
+3. Run `uv sync`to create a virtual environment and install exactly the versions pinned.
+
+
 
 ### Question 5
 
@@ -184,7 +192,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 5 fill here ---
+The project follows the cookiecutter structure but with adaptations. The main code lives in `src/stuperml` (API, data, model, train, evaluate, utils, visualize, logger). Tests are in `tests` and mirror the main modules. We added multiple Dockerfiles in `dockerfiles` (for training, evaluation, API and frontend), and a `frontend` folder with a Streamlit UI. Instead of `requirements.txt`we rely fully on `pyproject.toml`and `uv.lock` for dependency management. Documentation is configured via `mkdocs.yml.`
+
 
 ### Question 6
 
@@ -218,7 +227,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 7 fill here ---
+As seen in the `tests` folder, there is 12 pytests: 3 in `test_data.py`(data, preprocessing loading and `main`), 3 in `test_model.py`(SimpleML output, shape and gradient flow, and MeanBaseModel logic) and 6 in `test_utils.py`(split validation, splitting behavior, preprocessor construction, and tensor conversion). These mainly cover the data pipeline, preprocessing utilities and the core model behavior, which are the most critical pieces for correctness and training stability.
+
 
 ### Question 8
 
@@ -248,7 +258,12 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 9 fill here ---
+Yes, our workflow included using branches and pull requests. We used the GitHub project board feature to create tasks based on the course exercises, checklist, and our learnings. Group members assigned themselves to tasks and created a separate branch for each task to ensure changes were isolated from the main branch. This allowed multiple members to work in parallel without causing conflicts.
+
+Once a task was completed, the group member pushed and committed their changes to the repository, which automatically created a pull request. About half of the group members used the GitHub web UI and the Fork feature to make commits and manage their changes. Another group member then reviewed the pull request, providing feedback if necessary and checking that the changes met the project requirements. After approval, the branch was merged into the main branch.
+
+Using branches and pull requests improved our version control by keeping the main branch stable, enabling code reviews, and making it easy to track changes and contributions from each group member.
+
 
 ### Question 10
 
@@ -263,7 +278,14 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 10 fill here ---
+To ensure full reproducibility, we used DVC to track every file influencing our model and datasets. Rather than manually running `data.py` to get the data, we standardized the process using `uv run dvc pull` to fetch the required versions.
+During model development, we conducted experiments by varying the feature columns included in our training sets. This exploration was done to understand how different columns influenced the model performance and preprocessing requirements. DVC helped us to log and compare these versions.
+
+We also integrated this with GitHub Actions to automate our CI/CD pipeline. The workflow triggers whenever code changes affect the data or model, automatically generating a report of the modifications. This provided us with an overview of how the changes to the data. 
+
+DVC was hosted on Google Cloud using a GCS bucket and worked fine when running commands locally. We tried to deploy this on Google Cloud with Docker but faced issues after many trials. We eventually could not get the Docker deployment to work as intended.
+
+
 
 ### Question 11
 
@@ -280,7 +302,18 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 11 fill here ---
+In our project, we had four .yaml files responsible for our continuous integration:
+
+* .github/workflows/deploy.yaml
+* .github/workflows/dvc_data_check.yaml
+* .github/workflows/linting.yaml
+* .github/workflows/tests.yaml
+
+An example can be see here: [example](https://github.com/MLOpsGroup101/StudentPerformanceML/blob/main/.github/workflows/tests.yaml)
+This `tests.yaml` workflow triggered when we created a pull request or merged into main. This workflow was responsible for running all the tests in the `.test` folder, which ensured that all main scripts still worked when new implementations were added to the repository. The code was tested on two different operating systems, macos-latest and ubuntu-latest, since most development was on macOS while cloud deployment used Ubuntu. We also tested with Python 3.12 and 3.13. Caching was used to decrease the amount of time spent spinning up the VMs in Actions. We also made sure that this workflow must pass before merging the code into main. The test covered most of the scripts, but did not include scripts such as the train.py since it would be uneccesary to test and re-train a new model everytime new and small changes was done. 
+
+`linting.yaml` was responsible for checking ruff check and ruff format to ensure good code structure and automate format checks. `dvc_data_check.yaml` only triggered when changes were made to code affecting the data or model. `deploy.yaml` triggered for each pull request and merge into main to create the docker images and deploy the containers in the cloud.
+
 
 ## Running code and tracking experiments
 
@@ -299,7 +332,31 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 12 fill here ---
+We used a centralized configuration system built with Python dataclasses to manage our experiment parameters. By defining a DataConfig class, we ensured that all models and data pipelines received consistent input parameters, such as file paths, seed values, and GCS bucket URIs. This prevented manual errors and ensured reproducibility across different environments. To run an experiment, we would alter the configs/src/configs/__init__.py class and then run the experiment.
+
+```
+@dataclass(frozen=True)
+class DataConfig:
+    """Configuration for data loading and preprocessing."""
+
+    data_folder: Path = Path("data/")
+    gcs_uri: str | None = "gs://student_performance_ai_data/"
+    gcs_data: str = "ai_impact_student_performance_dataset.csv"
+    gcs_service_account_key: str | None = os.getenv("GCS_SA_KEY_PATH", "stuperml-e4e7c60b7b19.json")
+    target_col: str = "final_score"
+    file_names: tuple[str, ...] = ("X_train.pt", "X_val.pt", "X_test.pt", "y_train.pt", "y_val.pt", "y_test.pt")
+    dropped_columns: list[str] = field(default_factory=lambda: [...])
+    train_size: float = 0.8
+    test_size: float = 0.1
+    val_size: float = 0.1
+    seed: int = 42
+
+data_config = DataConfig()
+```
+We would then in train.py and data.py import it and use the attributes:
+```
+from configs import data_config
+```
 
 ### Question 13
 
@@ -314,7 +371,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 13 fill here ---
+We ensured reproducibility by using DVC to track our data and model versions. This allowed us to pull the exact dataset needed for any specific run. For the experiment parameters, we relied on the `DataConfig` class, but these inputs were only saved through Git commits.
+
+This could be improved by using dedicated configuration files for each experiment. Instead of keeping parameters in the code, we could store them in external files like YAML. This would make it easier to track and reproduce different experiments without having to look through the Git history for specific changes.
 
 ### Question 14
 
@@ -346,7 +405,24 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 15 fill here ---
+For our project, we developed several Docker images. Each stage of the project was containerized using separate Docker images, including training, evaluation, inference, and the frontend. All Docker images were based on the lightweight `ghcr.io/astral-sh/uv:python3.13-bookworm-slim base image`.
+
+To, for example, build the training image, the following command was used:
+
+```bash 
+docker build -f dockerfiles/train.dockerfile -t stuperml-train'
+```
+
+We ran the containers using volume mounts to persist artifacts, such as trained models and generated figures, from the container back to the host machine. This was done using the following command (where parameters such as learning rate and number of epochs could also be adjusted):
+
+```bash
+docker run -v $(pwd)/models:/app/models stuperml-train
+```
+
+
+The configuration of the train.dockerfile can be viewed here: [GitHub live preview](https://github.com/MLOpsGroup101/StudentPerformanceML/blob/7e8a05977ae496e252b2c0b97ed934ae2b56e5ec/dockerfiles/train.dockerfile)
+
+After local testing, all containers were easily deployable on Google Cloud Platform (GCP). For the API and frontend, the containers were configured to listen on port 8080 to support deployment on Cloud Run.
 
 ### Question 16
 
@@ -378,7 +454,18 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 17 fill here ---
+
+- Cloud Logging: Used to view logs from builds and the running API.
+- Cloud Run: Used to deploy the API container and serve predictions.
+- VM Manager: Used to manage virtual machines that ran some container builds.
+- Cloud Build: Used to build Docker images directly from our repository.
+- Cloud Storage: Used to store the dataset and save model artifacts.
+- Vertex AI: Used to run training jobs for the model.
+- Networking: Used to manage basic connectivity and firewall rules between services.
+- Artifact Registry: Used to store and distribute Docker images for deployment.
+- Container Registry Vulnerability Scanning: Used to scan Docker images for vulnerabilities (the results were not actively acted upon).
+- Compute Engine: Used to run scripts and experiments on virtual machines when needed.
+
 
 ### Question 18
 
@@ -393,7 +480,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 18 fill here ---
+We used Compute Engine to run heavier jobs that did not fit neatly into serverless services, mainly for building and testing containers. We created virtual machine (VM) instances on demand, installed dependencies using `uv`, and ran the same training and preprocessing scripts as in local development. The VMs were also useful when we needed to pull data from Cloud Storage, train models, and push artifacts back for deployment.
+
+For hardware, we used standard CPU-based VMs (for example, `e2-standard` or similar instance types), as our model is lightweight and does not require GPUs. The VMs were spun up only when needed and shut down afterward to avoid unnecessary costs. Depending on the task, we ran our code either directly on the VM or inside a Docker container built from our project image.
 
 ### Question 19
 
@@ -402,7 +491,11 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 19 fill here ---
+
+![Figure 1](figures/spg19_1.png)
+
+![Figure 2](figures/spg19_2.png)
+
 
 ### Question 20
 
@@ -411,7 +504,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 20 fill here ---
+![Figure 1](figures/spg20.png)
+
+
 
 ### Question 21
 
@@ -420,7 +515,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 21 fill here ---
+![Figure 1](figures/spg21.png)
 
 ### Question 22
 
@@ -435,7 +530,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 22 fill here ---
+We did manage to train the model in the cloud. We used a manual GitHub Actions trigger that runs Cloud Build, which in turn launches a Vertex AI custom training job with our training container. We intentionally kept it manual (not tied to file changes) so we could control when training jobs ran and avoid accidental cloud costs. Vertex AI handled provisioning and running the container, and the training script saved the model artifacts to our Cloud Storage bucket under models/. We chose this setup because it gave us controlled training (no booming costs) while still letting us run our own Docker-based training code.
 
 ## Deployment
 
@@ -452,7 +547,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 23 fill here ---
+We did manage to write an API for our model using FastAPI. The API loads the trained PyTorch model and the saved preprocessing pipeline on startup, then exposes a /predict endpoint that accepts a list of rows as JSON. Each request is converted into a DataFrame, run through the same preprocessor used during training, and then passed into the model for inference. This keeps inference consistent with training and avoids feature mismatch issues. We also added a simple health check endpoint so we can verify the service is up. For deployment, the API runs inside a Docker container and runs through Cloud Run.
+
+
 
 ### Question 24
 
@@ -468,7 +565,9 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 24 fill here ---
+We deployed the API both locally and in the cloud. Locally, we run it with `uv run uvicorn src.stuperml.api:app --reload` and send requests to [localhost](http://localhost:8000/predict). For cloud deployment, we containerized the API and deployed it to Cloud Run, which handles scaling and HTTPS endpoints. The container includes the model and preprocessor artifacts, and the service is invoked by sending a POST request with JSON data.
+
+This setup lets us test quickly on local machines and then use the same build for cloud setup.
 
 ### Question 25
 
@@ -483,7 +582,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 25 fill here ---
+We did unit tests with pytest and FastAPI’s TestClient. We mocked the model so the tests only check that the endpoints respond and the prediction output format is correct. We didn’t run any load testing. If we had time, we would use Locust or k6 to send lots of concurrent requests to /predict and measure response time, error rate, and how many requests the service can handle before slowing down or failing. That would help us decide whether to scale the service or change settings in Cloud Run.
 
 ### Question 26
 
@@ -498,7 +597,8 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 26 fill here ---
+We did not implement full model monitoring. We can see basic service health through Cloud Logging (errors, request volumes, latency), but we did not add drift detection, performance tracking, or automated alerts tied to model quality. If we had monitoring, we’d track input feature distributions over time, prediction distributions, and a small set of ground‑truth outcomes when available. That would let us detect data drift, degraded accuracy, or unexpected behavior and retrain the model before it impacts users. A big part of why we didn't, is also because we never optimized our model to be any good.
+
 
 ## Overall discussion of project
 
@@ -517,7 +617,14 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 27 fill here ---
+
+![Usage in cloud](figures/spg27.png)
+
+
+We spent a total of around 250 DKK. This was quite a jump from the last time, which was mainly caused by "Container Registry Vulnerability Scanning", because we built around 20x of our docker images for bug fixing. Looking back, not the best money decision. Luckily, it was free money.
+
+Our experience with working in Google Cloud was okay. We believe that all cloud services are probably pretty annoying to use, and there is a lot of info online on how to use google's (like the youtube videos). A lot of the problems we had, like reading the log of docker builds, had issues because we didn't know where to look, (for docker, we didn't look at the actual terminal log at first, so we didn't know it was a problem with our own build not having the correct subfolders etc.)
+
 
 ### Question 28
 
@@ -534,6 +641,10 @@ will check the repositories and the code to verify your answers.
 > Answer:
 
 --- question 28 fill here ---
+
+
+We added a Frontend: a seperate Streamlit app, that calls the Cloud Run API and visualizes predictions for end-users.
+
 
 ### Question 29
 
@@ -582,4 +693,14 @@ will check the repositories and the code to verify your answers.
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+Student s234834 was in charge of Docker, Frontend Development, Google Cloud Platform.
+
+Student s224189 was in charge of Logging, Docs, Project Questions
+
+Student s234859 was in charge of Data Version Control (DVC), Unit Testing, Continuous Integration (CI), Model setup.
+
+Student s234805 was in charge of Google Cloud Platform, FastAPI, Data Management.
+
+All group members contributed actively to the codebase by creating branches, committing changes, and submitting pull requests, which were reviewed and merged collaboratively, and all group members were present at all scheduled working days.
+
+We used ChatGPT as a generative AI tool to help explain coding problems, clarify concepts, and provide guidance on how to set up certain tools and configurations during development.
