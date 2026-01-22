@@ -69,9 +69,10 @@ steps:
       - '--allow-unauthenticated'
       - '--memory=1Gi'
       - '--port=8080'
-      
+
 options:
   logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_4'
 
 images:
   - 'gcr.io/$PROJECT_ID/stuperml-api'
