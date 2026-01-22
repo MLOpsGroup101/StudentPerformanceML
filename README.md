@@ -17,6 +17,8 @@ Overall, this project demonstrates how modern MLOps techniques can be combined w
 
 Notice the project is intended for MacOS systems.
 
+For documentation, see [GitHub pages](https://mlopsgroup101.github.io/StudentPerformanceML/)
+
 ## Project structure
 
 The directory structure of the project looks like this:
