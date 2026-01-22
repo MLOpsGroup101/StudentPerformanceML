@@ -39,13 +39,13 @@ def test_data_load():
     assert features.shape[1] > 0
     assert features.shape[0] == targets.shape[0]
 
+
 def test_generate_report():
     dataset_manager = MyDataset(cfg=data_config)
     dataset_manager.preprocess()
     train_set, val_set, test_set = dataset_manager.load_data()
     generate_report(train_set, val_set, test_set, data_config)
-    
-    # Assert that the distribution plot was generated
+
     plot_path = "reports/figures/dist_plot.png"
     assert os.path.exists(plot_path), f"Report plot not found at {plot_path}"
 
@@ -55,5 +55,3 @@ def test_data_main():
         main()
     except Exception as e:
         assert False, f"main() failed: {e}"
-        
-
