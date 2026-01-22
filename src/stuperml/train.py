@@ -17,6 +17,7 @@ MODEL_DIR = Path("models")
 WANDB_API_KEY = "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"
 wandb.login(key=WANDB_API_KEY)
 
+
 def _is_cloud_run() -> bool:
     """Return True when running in managed cloud training."""
     return bool(os.getenv("AIP_MODEL_DIR") or os.getenv("VERTEX_AI_JOB_ID"))
