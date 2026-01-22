@@ -81,3 +81,5 @@ To launch API in terminal:
 ```bash
 uv run uvicorn src.stuperml.api:app --reload
 ```
+
+API through Cloud: [`Model Inference`](https://stuperml-frontend-service-709612871775.europe-west1.run.app/)
