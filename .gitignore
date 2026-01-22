@@ -178,3 +178,4 @@ cython_debug/
 data/
 stuperml-e4e7c60b7b19.json
 /data
+wandb
