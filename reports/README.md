@@ -446,6 +446,7 @@ After local testing, all containers were easily deployable on Google Cloud Platf
 > Answer:
 
 --- question 16 fill here ---
+When debugging the code locally we used the python debugger to set breakpoints and F5, F10 and F11 to step through the code when failling. Since the code base was very simple and ran fast locally we chose not to use a profiler. Most of the bugs we had in the code was when connecting and deploying the code to cloud. Here we used the logs printed for the different services and here we used a combination of official documentation and AI-tools to change the fixes. If our model was bigger and training took more time it would make sence to use a profiler investigate which functions used the most time. 
 
 ## Working in the cloud
 
