@@ -12,6 +12,7 @@ from stuperml.model import SimpleMLP
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 model_dir = os.getenv("AIP_MODEL_DIR")
 
+
 def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: bool = False) -> None:
     print("Training day and night")
 
@@ -73,11 +74,11 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
 
     if model_dir:
         torch.save(model.state_dict(), model_filename)
-        
+
         path_parts = model_dir.replace("gs://", "").split("/")
         bucket_name = path_parts[0]
         blob_path_prefix = "/".join(path_parts[1:])
-        
+
         client = storage.Client()
         bucket = client.bucket(bucket_name)
 
@@ -93,10 +94,10 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
         plt.plot(statistics["val_loss"], label="Val Loss")
         plt.title(f"Loss - Run {timestamp}")
         plt.legend()
-        
+
         plot_filename = f"loss_plot_{timestamp}.png"
         plt.savefig(plot_filename)
-        
+
         # Upload Plot
         plot_blob_path = f"{blob_path_prefix}/{plot_filename}"
         blob_plot = bucket.blob(plot_blob_path)
@@ -104,7 +105,7 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
         print(f"Plot saved to gs://{bucket_name}/{plot_blob_path}")
     else:
         os.makedirs("models", exist_ok=True)
-        torch.save(model.state_dict(), f"models/model.pth")
+        torch.save(model.state_dict(), "models/model.pth")
         print("Saved locally.")
 
     plt.figure(figsize=(10, 5))
