@@ -16,6 +16,11 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.ba
 MODEL_DIR = Path("models")
 
 
+def _is_cloud_run() -> bool:
+    """Return True when running in managed cloud training."""
+    return bool(os.getenv("AIP_MODEL_DIR") or os.getenv("VERTEX_AI_JOB_ID"))
+
+
 def _parse_gcs_uri(uri: str) -> tuple[str, str]:
     """Parse a GCS URI into bucket name and object prefix."""
     bucket_path = uri[5:] if uri.startswith("gs://") else uri
@@ -45,10 +50,9 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
         project="StuPerML",
         entity=wandb_entity,
         config={"learning_rate": lr, "batch_size": batch_size, "epochs": epochs, "device": str(DEVICE)},
-        mode="online",
+        mode="offline" if _is_cloud_run() else "online",
     )
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     print(f"Run ID: {timestamp}")
 
     print(f"{lr=}, {batch_size=}, {epochs=}")
@@ -110,7 +114,7 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
     print("Saved locally.")
 
     gcs_models_uri = os.getenv("AIP_MODEL_DIR") or data_config.gcs_models_uri
-    if gcs_models_uri:
+    if _is_cloud_run() and gcs_models_uri:
         if (
             data_config.gcs_service_account_key
             and "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ
