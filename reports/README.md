@@ -398,7 +398,15 @@ This could be improved by using dedicated configuration files for each experimen
 >
 > Answer:
 
---- question 14 fill here ---
+As seen in the attached screenshot, we tracked training loss, validation loss, and epochs.
+
+![Train/val loss](figures/spg14.png)
+
+The Training Loss measures the Mean Squared Error on the training data after each epoch. This metric is fundamental as it quantifies how well the neural network is learning to map the input features (study habits, AI usage) to the target variable (student grades). The graph demonstrates a sharp decline in the first epoch, dropping from a loss of over 1800 to roughly 200. This rapid convergence indicates that the model architecture and learning rate are well-suited for the data, allowing the optimizer to quickly find a good set of weights.
+
+The Validation Loss tracks the model's performance on a separate dataset that was held back during training. We track this to monitor for overfitting. It's common for a model to memorize training data, leading to low training loss but poor performance on new data. By comparing these two graphs, we can assess generalization. Since the validation loss trends downwards (from ~208 to ~190) and stabilizes alongside the training loss, we can confirm the model is generalizing well to unseen students.
+
+We specifically chose MSE as our metric because this is a regression task. MSE is important because it penalizes large prediction errors more heavily than small ones, ensuring the model avoids making drastic mistakes in grade prediction. These metrics collectively inform us that 30 epochs were sufficient for the model to converge without overfitting.
 
 ### Question 15
 
