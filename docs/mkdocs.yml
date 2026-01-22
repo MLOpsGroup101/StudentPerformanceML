@@ -21,3 +21,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Usage: usage.md
+  - Data: data.md
+  - Models: models.md
+  - API Reference: api.md
