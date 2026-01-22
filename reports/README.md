@@ -148,7 +148,9 @@ s224189, s234834, s234859, s234805
 >
 > Answer:
 
---- question 3 fill here ---
+
+No. We only included open-source frameworks introduced in the course. We feel the course material was sufficient.
+
 
 ## Coding environment
 
@@ -168,13 +170,16 @@ s224189, s234834, s234859, s234805
 >
 > Answer:
 
-Dependencies are managed with `uv` and a single `pyproject.toml` plus `uv.lock`at the project root. 
+We managed dependencies using `uv` with `pyproject.toml` and `uv.lock`. All runtime, dev, and tooling dependencies (pytest, ruff, mkdocs, DVC, FastAPI, Streamlit, etc.) are declared there, and `uv.lock` is committed to ensure fully reproducible resolution across machines and CI.
 
-A new team member would:
+For a new team member to get an exact copy of the environment, the steps are:
 
-1. Install `uv`
-2. Clone the repository
-3. Run `uv sync`to create a virtual environment and install exactly the versions pinned.
+1. Install `uv` and clone the repository.
+2. Run `uv run invoke sync`, which creates a Python 3.13 virtual environment, installs all dependencies from `uv.lock`, and downloads the dataset.
+3. Optionally verify the setup with `uv run pytest tests/` and `uv run ruff check ..`
+
+Because the lockfile is versioned, CI and local development always use identical dependency versions.
+
 
 
 
@@ -192,7 +197,9 @@ A new team member would:
 >
 > Answer:
 
-The project follows the cookiecutter structure but with adaptations. The main code lives in `src/stuperml` (API, data, model, train, evaluate, utils, visualize, logger). Tests are in `tests` and mirror the main modules. We added multiple Dockerfiles in `dockerfiles` (for training, evaluation, API and frontend), and a `frontend` folder with a Streamlit UI. Instead of `requirements.txt`we rely fully on `pyproject.toml`and `uv.lock` for dependency management. Documentation is configured via `mkdocs.yml.`
+The project follows the DTU MLOps cookiecutter structure with a few extensions. The core logic lives in `src/stuperml`, which contains `api.py`, `data.py`, `model.py`, `train.py`, `evaluate.py`, `visualize.py`, plus `utils.py` and `logger.py`for shared helpers and structured logging. There is also a small `figures/` subfolder for generated plots.
+
+The `tests/` folder mirrors these modules with unit tests for data, model, and API. We kept the standard `configs/`, `models/`, `notebooks/`, and `reports/` folders for configuration, saved models, exploratory work, and the written report/figures. Compared to the template, we extended the `dockerfiles/` directory with additional Dockerfiles for training, evaluation, API, and the frontend, and added a `frontend/` folder with a Streamlit UI that talks to the API. Instead of `requirements.txt`, we rely on `pyproject.toml` and `uv.lock` from the template for dependency management.
 
 
 ### Question 6
@@ -229,7 +236,7 @@ This is especially important for larger projects where the same code is used mul
 >
 > Answer:
 
-As seen in the `tests` folder, there is 12 pytests: 3 in `test_data.py`(data, preprocessing loading and `main`), 3 in `test_model.py`(SimpleML output, shape and gradient flow, and MeanBaseModel logic) and 6 in `test_utils.py`(split validation, splitting behavior, preprocessor construction, and tensor conversion). These mainly cover the data pipeline, preprocessing utilities and the core model behavior, which are the most critical pieces for correctness and training stability.
+As seen in the `tests/` folder, there is several tests in `test_data.py` (data, preprocessing loading and `main`), `test_model.py`(SimpleML output, shape and gradient flow, and MeanBaseModel logic), `test_api.py` (Host locally with httpx) and `test_utils.py`(split validation, splitting behavior, preprocessor construction, and tensor conversion). These mainly cover the data pipeline, preprocessing utilities and the core model behavior, which are the most critical pieces for correctness and training stability.
 
 
 ### Question 8
@@ -251,7 +258,7 @@ When testing the code coverage we get the following table:
 
 The total code coverage of our code is 82%, which includes all our source code. We are not super far from 100% coverage of the code that we test. It is important to notice that train.py and evaluate.py are not tested. This was done on purpose since it would not make sense to train the whole model during testing. Instead, we test all the modules going into train.py to make sure they work before the training script runs.
 
-Even if we reached 100% coverage, I still would not trust the code to be completely error-free. High coverage only means that every line of code was executed at least once during the tests, but it does not prove the logic is correct or that all edge cases were handled. A test can run a line of code without actually checking if the result is right for every possible input or handling unexpected data properly. Therefore, while coverage is a useful metric to find untested parts of the code, it doesn't guarantee that the software is bug-free.
+Even if we reached 100% coverage, we still would not trust the code to be completely error-free. High coverage only means that every line of code was executed at least once during the tests, but it does not prove the logic is correct or that all edge cases were handled. A test can run a line of code without actually checking if the result is right for every possible input or handling unexpected data properly. Therefore, while coverage is a useful metric to find untested parts of the code, it doesn't guarantee that the software is bug-free.
 
 ### Question 9
 
@@ -271,6 +278,8 @@ Yes, our workflow included using branches and pull requests. We used the GitHub 
 Once a task was completed, the group member pushed and committed their changes to the repository, which automatically created a pull request. About half of the group members used the GitHub web UI and the Fork feature to make commits and manage their changes. Another group member then reviewed the pull request, providing feedback if necessary and checking that the changes met the project requirements. After approval, the branch was merged into the main branch.
 
 Using branches and pull requests improved our version control by keeping the main branch stable, enabling code reviews, and making it easy to track changes and contributions from each group member.
+
+For some very small changes, direct push to main was used.
 
 
 ### Question 10
@@ -317,8 +326,9 @@ In our project, we had four .yaml files responsible for our continuous integrati
 * .github/workflows/linting.yaml
 * .github/workflows/tests.yaml
 
-An example can be see here: [example](https://github.com/MLOpsGroup101/StudentPerformanceML/blob/main/.github/workflows/tests.yaml)
-This `tests.yaml` workflow triggered when we created a pull request or merged into main. This workflow was responsible for running all the tests in the `.test` folder, which ensured that all main scripts still worked when new implementations were added to the repository. The code was tested on two different operating systems, macos-latest and ubuntu-latest, since most development was on macOS while cloud deployment used Ubuntu. We also tested with Python 3.12 and 3.13. Caching was used to decrease the amount of time spent spinning up the VMs in Actions. We also made sure that this workflow must pass before merging the code into main. The test covered most of the scripts, but did not include scripts such as the train.py since it would be uneccesary to test and re-train a new model everytime new and small changes was done. 
+An example can be see here: [example](https://github.com/MLOpsGroup101/StudentPerformanceML/blob/main/.github/workflows/tests.yaml).
+
+This `tests.yaml` workflow triggered when we created a pull request or merged into main. This workflow was responsible for running all the tests in the `.test` folder, which ensured that all main scripts still worked when new implementations were added to the repository. The code was tested on two different operating systems, macos-latest and ubuntu-latest, since most development was on macOS while cloud deployment used Ubuntu. We also tested with Python 3.12 and 3.13. Caching was used to decrease the amount of time spent spinning up the VMs in Actions. We also made sure that this workflow must pass before merging the code into main. The test covered most of the scripts, but did not include scripts such as the train.py since it would be unnecessary to test and re-train a new model every time new and small changes was done. 
 
 `linting.yaml` was responsible for checking ruff check and ruff format to ensure good code structure and automate format checks. `dvc_data_check.yaml` only triggered when changes were made to code affecting the data or model. `deploy.yaml` triggered for each pull request and merge into main to create the docker images and deploy the containers in the cloud.
 
@@ -342,7 +352,7 @@ This `tests.yaml` workflow triggered when we created a pull request or merged in
 
 We used a centralized configuration system built with Python dataclasses to manage our experiment parameters. By defining a DataConfig class, we ensured that all models and data pipelines received consistent input parameters, such as file paths, seed values, and GCS bucket URIs. This prevented manual errors and ensured reproducibility across different environments. To run an experiment, we would alter the configs/src/configs/__init__.py class and then run the experiment.
 
-```
+```bash
 @dataclass(frozen=True)
 class DataConfig:
     """Configuration for data loading and preprocessing."""
@@ -351,6 +361,7 @@ class DataConfig:
     gcs_uri: str | None = "gs://student_performance_ai_data/"
     gcs_data: str = "ai_impact_student_performance_dataset.csv"
     gcs_service_account_key: str | None = os.getenv("GCS_SA_KEY_PATH", "stuperml-e4e7c60b7b19.json")
+    gcs_models_uri: str | None = os.getenv("GCS_MODELS_URI", "gs://student_performance_ai_data/models")
     target_col: str = "final_score"
     file_names: tuple[str, ...] = ("X_train.pt", "X_val.pt", "X_test.pt", "y_train.pt", "y_val.pt", "y_test.pt")
     dropped_columns: list[str] = field(default_factory=lambda: [...])
@@ -362,7 +373,8 @@ class DataConfig:
 data_config = DataConfig()
 ```
 We would then in train.py and data.py import it and use the attributes:
-```
+
+```bash
 from configs import data_config
 ```
 
@@ -435,7 +447,6 @@ We ran the containers using volume mounts to persist artifacts, such as trained 
 docker run -v $(pwd)/models:/app/models stuperml-train
 ```
 
-
 The configuration of the train.dockerfile can be viewed here: [GitHub live preview](https://github.com/MLOpsGroup101/StudentPerformanceML/blob/7e8a05977ae496e252b2c0b97ed934ae2b56e5ec/dockerfiles/train.dockerfile)
 
 After local testing, all containers were easily deployable on Google Cloud Platform (GCP). For the API and frontend, the containers were configured to listen on port 8080 to support deployment on Cloud Run.
@@ -453,8 +464,7 @@ After local testing, all containers were easily deployable on Google Cloud Platf
 >
 > Answer:
 
---- question 16 fill here ---
-When debugging the code locally we used the python debugger to set breakpoints and F5, F10 and F11 to step through the code when failling. Since the code base was very simple and ran fast locally we chose not to use a profiler. Most of the bugs we had in the code was when connecting and deploying the code to cloud. Here we used the logs printed for the different services and here we used a combination of official documentation and AI-tools to change the fixes. If our model was bigger and training took more time it would make sence to use a profiler investigate which functions used the most time. 
+When debugging the code locally we used the python debugger to set breakpoints and F5, F10 and F11 to step through the code when failing. Since the code base was very simple and ran fast locally we chose not to use a profiler. Most of the bugs we had in the code was when connecting and deploying the code to cloud. Here we used the logs printed for the different services and here we used a combination of official documentation and AI-tools to change the fixes. If our model was bigger and training took more time it would make sense to use a profiler investigate which functions used the most time. 
 
 ## Working in the cloud
 
@@ -547,7 +557,7 @@ For hardware, we used standard CPU-based VMs (for example, `e2-standard` or simi
 >
 > Answer:
 
-We did manage to train the model in the cloud. We used a manual GitHub Actions trigger that runs Cloud Build, which in turn launches a Vertex AI custom training job with our training container. We intentionally kept it manual (not tied to file changes) so we could control when training jobs ran and avoid accidental cloud costs. Vertex AI handled provisioning and running the container, and the training script saved the model artifacts to our Cloud Storage bucket under models/. We chose this setup because it gave us controlled training (no booming costs) while still letting us run our own Docker-based training code.
+Yes, we did manage to train the model in the cloud. We used a manual GitHub Actions trigger that runs Cloud Build, which in turn launches a Vertex AI custom training job with our training container. We intentionally kept it manual (not tied to file changes) so we could control when training jobs ran and avoid accidental cloud costs. Vertex AI handled provisioning and running the container, and the training script saved the model artifacts to our Cloud Storage bucket under models/. We chose this setup because it gave us controlled training (no booming costs) while still letting us run our own Docker-based training code.
 
 ## Deployment
 
@@ -564,7 +574,7 @@ We did manage to train the model in the cloud. We used a manual GitHub Actions t
 >
 > Answer:
 
-We did manage to write an API for our model using FastAPI. The API loads the trained PyTorch model and the saved preprocessing pipeline on startup, then exposes a /predict endpoint that accepts a list of rows as JSON. Each request is converted into a DataFrame, run through the same preprocessor used during training, and then passed into the model for inference. This keeps inference consistent with training and avoids feature mismatch issues. We also added a simple health check endpoint so we can verify the service is up. For deployment, the API runs inside a Docker container and runs through Cloud Run.
+Yes, we did manage to write an API for our model using FastAPI. The API loads the trained PyTorch model and the saved preprocessing pipeline on startup, then exposes a /predict endpoint that accepts a list of rows as JSON. Each request is converted into a DataFrame, run through the same preprocessor used during training, and then passed into the model for inference. This keeps inference consistent with training and avoids feature mismatch issues. We also added a simple health check endpoint so we can verify the service is up. For deployment, the API runs inside a Docker container and runs through Cloud Run.
 
 
 
@@ -582,7 +592,7 @@ We did manage to write an API for our model using FastAPI. The API loads the tra
 >
 > Answer:
 
-We deployed the API both locally and in the cloud. Locally, we run it with `uv run uvicorn src.stuperml.api:app --reload` and send requests to [localhost](http://localhost:8000/predict). For cloud deployment, we containerized the API and deployed it to Cloud Run, which handles scaling and HTTPS endpoints. The container includes the model and preprocessor artifacts, and the service is invoked by sending a POST request with JSON data.
+We deployed the API both locally and in the cloud. Locally, we run it with `uv run uvicorn src.stuperml.api:app --reload` and send requests to [http://localhost:8080/predict](http://localhost:8080/predict). For cloud deployment, we containerized the API and deployed it to Cloud Run, which handles scaling and HTTPS endpoints. The container includes the model and preprocessor artifacts, and the service is invoked by sending a POST request with JSON data.
 
 This setup lets us test quickly on local machines and then use the same build for cloud setup.
 
@@ -657,10 +667,7 @@ Our experience with working in Google Cloud was okay. We believe that all cloud 
 >
 > Answer:
 
---- question 28 fill here ---
-
-
-We added a Frontend: a seperate Streamlit app, that calls the Cloud Run API and visualizes predictions for end-users.
+We implemented a Frontend: a seperate Streamlit app, that calls the Cloud Run API and visualizes inference queries on the model.
 
 
 ### Question 29
@@ -678,7 +685,21 @@ We added a Frontend: a seperate Streamlit app, that calls the Cloud Run API and 
 >
 > Answer:
 
---- question 29 fill here ---
+![Architecture of our system](figures/Mlops_dia.drawio-2.png)
+
+The diagram shows how our code moves from a developer’s laptop to a running system that users can interact with.
+
+On the left we have the main Python modules:  
+`data.py` loads and preprocesses the data, `model.py` defines the model, and `train.py` trains it.  
+`evaluate.py` checks performance and `api.py` exposes the trained model through an HTTP API.  
+During training and evaluation we write structured logs to our logging module, and the diagram also shows W&B as an optional tool for tracking experiments.
+
+A developer works locally and then pushes changes to GitHub. This push triggers GitHub Actions workflows. The workflows run tests and, when we are ready to deploy, they also trigger Google Cloud Build.
+
+Google Cloud Build builds Docker images that contain our code plus all dependencies. We create separate images for all the applications. These images are then used to run containers in the cloud.
+
+The frontend container talks to the API container to request predictions, and the user interacts only with the frontend. Developers can also trigger a special GitHub workflow to re‑train the model using the latest code and data.
+
 
 ### Question 30
 
@@ -692,7 +713,13 @@ We added a Frontend: a seperate Streamlit app, that calls the Cloud Run API and 
 >
 > Answer:
 
---- question 30 fill here ---
+The biggest struggle in the project was getting all cloud services to talk to each other reliably. Locally, our code and Docker images worked fairly quickly, but once we moved to GCP we ran into many small but time‑consuming issues: wrong ports in Cloud Run, missing folders in images, service account permissions, environment variables not being picked up, and confusion about where to find the right logs (Cloud Build vs. Cloud Run vs. Vertex AI). And in general how to interpret the logs.
+
+We also spent a lot of time on the trigger flow between GitHub Actions, Cloud Build, Artifact Registry, Vertex AI, and Cloud Run. Deciding when a workflow should run (on every push vs. manual dispatch), and wiring the steps so that tests ran before builds and builds happened before deployment, took several iterations. We gradually simplified the workflows, added clearer conditions, and relied more on manual triggers for expensive steps like training.
+
+Model performance was another challenge, but we consciously treated it as secondary. Once we had a baseline model that “worked”, we focused on making the pipeline reproducible and deployable aligned with the MLOps learning objectives.
+
+Overall a interesting and educational project, but with some struggles along the way.
 
 ### Question 31
 
@@ -720,4 +747,4 @@ Student s234805 was in charge of Google Cloud Platform, FastAPI, Data Management
 
 All group members contributed actively to the codebase by creating branches, committing changes, and submitting pull requests, which were reviewed and merged collaboratively, and all group members were present at all scheduled working days.
 
-We used ChatGPT as a generative AI tool to help explain coding problems, clarify concepts, and provide guidance on how to set up certain tools and configurations during development.
+We used ChatGPT and Gemini as a generative AI tools to help explain coding problems, clarify concepts, and provide guidance on how to set up certain tools and configurations during development. We also used agentic AI tools for writing some submodules such as unit tests etc. 
