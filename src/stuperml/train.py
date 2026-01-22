@@ -14,7 +14,8 @@ from stuperml.model import SimpleMLP
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
 MODEL_DIR = Path("models")
-
+WANDB_API_KEY = "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"
+wandb.login(key=WANDB_API_KEY)
 
 def _is_cloud_run() -> bool:
     """Return True when running in managed cloud training."""
@@ -50,7 +51,7 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
         project="StuPerML",
         entity=wandb_entity,
         config={"learning_rate": lr, "batch_size": batch_size, "epochs": epochs, "device": str(DEVICE)},
-        mode="offline" if _is_cloud_run() else "online",
+        mode="online",
     )
 
     print(f"Run ID: {timestamp}")
