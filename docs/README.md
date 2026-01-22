@@ -1,12 +1,22 @@
 Generating the docs
 ----------
 
-Use [mkdocs](http://www.mkdocs.org/) structure to update the documentation.
+This project uses [MkDocs](https://www.mkdocs.org/) with the configuration file
+[docs/mkdocs.yml](mkdocs.yml) and Markdown sources in [docs/source/](source/).
 
-Build locally with:
+Build the documentation locally from the project root with:
 
-    mkdocs build
+    uv run mkdocs build --config-file docs/mkdocs.yml --site-dir build
 
-Serve locally with:
+or via the invoke task:
 
-    mkdocs serve
+    uv run invoke build-docs
+
+Serve the documentation locally with live reload:
+
+    uv run mkdocs serve --config-file docs/mkdocs.yml
+
+or via the invoke task:
+
+    uv run invoke serve-docs
+
