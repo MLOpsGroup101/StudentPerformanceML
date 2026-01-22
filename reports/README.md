@@ -208,7 +208,9 @@ The project follows the cookiecutter structure but with adaptations. The main co
 >
 > Answer:
 
---- question 6 fill here ---
+We use linting and formatting to ensure our code is structured correctly, which is directly incorporated into our GitHub Actions (see Question 11) whenever new code is merged into the main branch. We use ruff check and ruff format to enforce these rules. When writing code, we use Pylance to help us correct any type errors in real time. For all major functions and classes, type hinting is required, which forces the developer to think carefully about what types a function takes in and what it outputs.
+
+This is especially important for larger projects where the same code is used multiple times when imported as modules. Since Python is a dynamically typed language, keeping strict type hinting is a good way to keep the project structured. This makes the code much easier to debug when an unexpected type is passed through a class or function.
 
 ## Version control
 
@@ -243,7 +245,13 @@ As seen in the `tests` folder, there is 12 pytests: 3 in `test_data.py`(data, pr
 >
 > Answer:
 
---- question 8 fill here ---
+When testing the code coverage we get the following table:
+
+![Table](figures/spg8.png)
+
+The total code coverage of our code is 82%, which includes all our source code. We are not super far from 100% coverage of the code that we test. It is important to notice that train.py and evaluate.py are not tested. This was done on purpose since it would not make sense to train the whole model during testing. Instead, we test all the modules going into train.py to make sure they work before the training script runs.
+
+Even if we reached 100% coverage, I still would not trust the code to be completely error-free. High coverage only means that every line of code was executed at least once during the tests, but it does not prove the logic is correct or that all edge cases were handled. A test can run a line of code without actually checking if the result is right for every possible input or handling unexpected data properly. Therefore, while coverage is a useful metric to find untested parts of the code, it doesn't guarantee that the software is bug-free.
 
 ### Question 9
 
