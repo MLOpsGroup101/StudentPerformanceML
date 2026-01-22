@@ -5,6 +5,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import torch
 import typer
+import wandb
 from google.cloud import storage
 
 from configs import data_config
@@ -39,6 +40,15 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
     print("Training day and night")
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    wandb_entity = os.getenv("WANDB_ENTITY", None)
+    wandb.init(
+        project="StuPerML",
+        entity=wandb_entity,
+        config={"learning_rate": lr, "batch_size": batch_size, "epochs": epochs, "device": str(DEVICE)},
+        mode="online",
+    )
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     print(f"Run ID: {timestamp}")
 
     print(f"{lr=}, {batch_size=}, {epochs=}")
@@ -89,8 +99,10 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 30, verbose: boo
         statistics["val_loss"].append(avg_val)
 
         print(f"Epoch {epoch} \t Summary: Train Loss: {avg_train:.5f}, \t Val Loss: {avg_val:.5f}")
+        wandb.log({"train_loss": avg_train, "val_loss": avg_val, "epoch": epoch})
 
     print("Training complete")
+    wandb.finish()
 
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     model_path = MODEL_DIR / f"model_{timestamp}.pth"
