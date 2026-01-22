@@ -1,6 +1,6 @@
 site_name: stuperml
 site_author: MLOpsGroup101
-docs_dir: docs/source
+docs_dir: source
 
 theme:
   language: en
@@ -21,3 +21,7 @@ plugins:
 
 nav:
   - Home: index.md
+  - Usage: usage.md
+  - Data: data.md
+  - Models: models.md
+  - API Reference: api.md
