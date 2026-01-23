@@ -23,47 +23,65 @@ For documentation, see [GitHub pages](https://mlopsgroup101.github.io/StudentPer
 
 The directory structure of the project looks like this:
 ```txt
-├── .github/                  # Github actions and dependabot
-│   ├── dependabot.yaml
-│   └── workflows/
-│       └── tests.yaml
-├── configs/                  # Configuration files
-├── data/                     # Data directory
-│   ├── processed
-│   └── raw
-├── dockerfiles/              # Dockerfiles
-│   ├── api.Dockerfile
-│   └── train.Dockerfile
-├── docs/                     # Documentation
-│   ├── mkdocs.yml
+.
+├── .github/
+├── configs/
+│   ├── pyproject.toml
+│   └── src/
+│       └── configs/
+│           ├── __init__.py
+│           └── py.typed
+├── dockerfiles/
+│   ├── api.dockerfile
+│   ├── evaluate.dockerfile
+│   ├── frontend.dockerfile
+│   └── train.dockerfile
+├── docs/
+│   ├── mkdocs.yaml
+│   ├── README.md
 │   └── source/
-│       └── index.md
-├── models/                   # Trained models
-├── notebooks/                # Jupyter notebooks
-├── reports/                  # Reports
-│   └── figures/
-├── src/                      # Source code
-│   ├── project_name/
-│   │   ├── __init__.py
-│   │   ├── api.py
-│   │   ├── data.py
-│   │   ├── evaluate.py
-│   │   ├── models.py
-│   │   ├── train.py
-│   │   └── visualize.py
-└── tests/                    # Tests
+│       ├── api.md
+│       ├── data.md
+│       ├── index.md
+│       ├── models.md
+│       └── usage.md
+├── frontend/
+│   └── ui.py
+├── models/
+│   └── model.pth
+├── notebooks/
+├── reports/
+│   ├── figures/
+│   │   └── Mlops_dia.drawio-2.png
+│   ├── README.md
+│   └── report.py
+├── src/
+│   └── stuperml/
+│       ├── __init__.py
+│       ├── api.py
+│       ├── data.py
+│       ├── evaluate.py
+│       ├── logger.py
+│       ├── model.py
+│       ├── train.py
+│       ├── utils.py
+│       └── visualize.py
+├── tests/
 │   ├── __init__.py
 │   ├── test_api.py
 │   ├── test_data.py
-│   └── test_model.py
-├── .gitignore
-├── .pre-commit-config.yaml
+│   ├── test_model.py
+│   └── test_utils.py
+├── AGENTS.md
+├── cloudbuild-train.yaml
+├── cloudbuild.yaml
+├── dvc.lock
+├── dvc.yaml
 ├── LICENSE
-├── pyproject.toml            # Python project file
-├── README.md                 # Project README
-├── requirements.txt          # Project requirements
-├── requirements_dev.txt      # Development requirements
-└── tasks.py                  # Project tasks
+├── pyproject.toml
+├── README.md
+├── tasks.py
+└── uv.lock
 ```
 
 
